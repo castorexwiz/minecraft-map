@@ -1,8 +1,9 @@
 const canvas = document.getElementById("mapCanvas");
 canvas.width = 800;
 canvas.height = 800;
+
 const ctx = canvas.getContext("2d");
-let scale = 0.12; // 0.1で初期表示±4000
+let scale = 0.13; // 初期表示調整。canvas / scale = 表示ブロック数(±トータル)
 let offsetX = 0;
 let offsetZ = 0;
 let isDragging = false;
@@ -12,17 +13,17 @@ let lastMouseY = 0;
 let customPoint = null;
 
 function toCanvasX(worldX) {
-  return canvas.width / 2 + (worldX + offsetX) * scale;
+  return canvas.width / 2 + (worldX + offsetX) * scale; // Xが増えると右(東)
 }
 function toCanvasZ(worldZ) {
-  return canvas.height / 2 + (worldZ + offsetZ) * scale;
+  return canvas.height / 2 + (worldZ + offsetZ) * scale; // Zが増えると下(南)
 }
 
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.font = "10px sans-serif";
-  const gridSpacing = 500;
-  const numLines = Math.ceil(50000 / gridSpacing);
+  const gridSpacing = 500; // グリッド表示間隔
+  const numLines = Math.ceil(10000 / gridSpacing); // グリッド表示する範囲
 
   // X方向グリッド線
   for (let i = -numLines; i <= numLines; i++) {
@@ -171,7 +172,7 @@ canvas.addEventListener("wheel", function(event) {
   const delta = event.deltaY > 0 ? -zoomSpeed : zoomSpeed;
   scale = Math.max(0.01, scale + delta);
   render(globalData);
-}, { passive: false }); // ← ページスクロール防止
+}, { passive: false }); // ページスクロール防止
 
 canvas.addEventListener("mousedown", function(event) {
   isDragging = true;

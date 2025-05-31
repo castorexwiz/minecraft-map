@@ -2,6 +2,9 @@
 
 Minecraftの座標データをCSVで用意することでグリッドの入ったマップに表示するページです。
 
+## GitHub Pages
+https://castorexwiz.github.io/minecraft-map/
+
 ## 機能
 - 準備したCSVデータの内容（場所名と座標）が表示されます
 - マウスホイールとドラッグで表示を調整できます

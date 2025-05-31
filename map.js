@@ -25,7 +25,7 @@ function toCanvasZ(worldZ) {
 
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  let fontSize = window.innerWidth < 1000 ? 18 : 12; // PCとスマホのフォント設定
+  let fontSize = window.innerWidth < 820 ? 22 : 14; // PCとスマホのフォント設定
   ctx.font = `${fontSize}px sans-serif`;
   const gridSpacing = 500; // グリッド表示間隔
   const numLines = Math.ceil(50000 / gridSpacing); //最大グリッド配置範囲

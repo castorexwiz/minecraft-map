@@ -71,10 +71,10 @@ function drawGrid() {
 
   // 軸ラベル(エスケープ済み)
   ctx.fillStyle = "blue";
-  ctx.fillText("\u2192 X\u304C\u5897\u3048\u308B (\u6771)", canvas.width - 130, toCanvasZ(0) - 10);
-  ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, toCanvasZ(0) - 10);
-  ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", toCanvasX(0) + 10, canvas.height - 10);
-  ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", toCanvasX(0) + 10, 20);
+  ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, toCanvasZ(0) - 10); // Xが増える（東） →
+  ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, toCanvasZ(0) - 10); // ← Xが減る（西）
+  ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", toCanvasX(0) + 10, canvas.height - 10); // ↓ Zが増える（南）
+  ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", toCanvasX(0) + 10, 20); // ↑ Zが減る（北）
 }
 
 function drawPoint(x, z, name) {

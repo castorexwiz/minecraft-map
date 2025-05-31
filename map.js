@@ -21,7 +21,7 @@ function toCanvasZ(worldZ) {
 
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = "10px sans-serif";
+  ctx.font = "12px sans-serif"; // マップ上のフォントサイズ・種類
   const gridSpacing = 500; // グリッド表示間隔
   const numLines = Math.ceil(10000 / gridSpacing); // グリッド表示する範囲
 

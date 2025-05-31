@@ -3,7 +3,6 @@ canvas.width = 800;  // マップ表示範囲(横)
 canvas.height = 800; // マップ表示範囲(縦)
 
 const ctx = canvas.getContext("2d");
-let scale = 0.35; // 初期表示調整。canvas / scale = 表示ブロック数(±トータル)
 let offsetX = 0;
 let offsetZ = 0;
 let isDragging = false;
@@ -38,11 +37,26 @@ function toCanvasZ(worldZ) {
   return canvas.height / 2 + (worldZ + offsetZ) * scale; // Zが増えると下(南)
 }
 
+function getGridSpacing() {
+  const input = document.getElementById("gridSpacingInput");
+  const value = parseInt(input?.value || "200");
+  return isNaN(value) ? 200 : value;
+}
+
+function getScale() {
+  const input = document.getElementById("blockRangeInput");
+  const halfRange = parseInt(input?.value || "1000"); // ±ブロック範囲として入力
+  const totalRange = halfRange * 2;
+  return isNaN(totalRange) || totalRange <= 0
+    ? 0.35
+    : canvas.width / totalRange;
+}
+
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   let fontSize = window.innerWidth < 820 ? 22 : 14; // PCとスマホのフォント設定
   ctx.font = `${fontSize}px sans-serif`;
-  const gridSpacing = 500; // グリッド表示間隔
+const gridSpacing = getGridSpacing();
   const numLines = Math.ceil(50000 / gridSpacing); //最大グリッド配置範囲
 
   // X方向グリッド線
@@ -205,6 +219,13 @@ function render(data) {
   }
 }
 
+function applySettings() {
+  scale = getScale();          // ユーザー入力から更新
+  offsetX = 0;                 // 中央に戻す
+  offsetZ = 0;
+  render(globalData);          // そのうえで描画
+}
+
 function markCustomPoint() {
   const x = parseInt(document.getElementById("inputX").value);
   const z = parseInt(document.getElementById("inputZ").value);
@@ -253,7 +274,7 @@ Papa.parse("location_data.csv", {
   header: true,
   complete: function(results) {
     globalData = results.data;
-    render(globalData);
+    applySettings();         // ← ここで scale 設定と初回描画
     displayTable(globalData);
   }
 });

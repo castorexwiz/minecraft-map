@@ -9,6 +9,23 @@
   <h1>しがりこソロマイクラ座標マップ（非公式）</h1>
   <p class="map-description">座標は（ X , Z ）でYは省略 / マウスドラッグとホイールで表示調整</p>
 
+  <!-- 設定ボタン（右端固定） -->
+  <button id="settingsToggle" class="settings-toggle">設定</button>
+  
+  <!-- 設定パネル（右からスライド） -->
+  <div id="settingsPanel" class="settings-panel">
+    <h2>表示設定</h2>
+    <p>
+      <label for="gridSpacingInput">グリッド間隔　</label>
+      <input type="number" id="gridSpacingInput" value="100" />
+    </p>
+    <p>
+      <label for="blockRangeInput">表示範囲設定</label>
+      ±<input type="number" id="blockRangeInput" value="1000" />
+    </p>
+    <button onclick="applySettings()">設定反映（表示リセット）</button>
+  </div>
+
   <div class="jump-form">
     現在地の確認　
     <label>X : <input type="number" id="inputX" /></label>
@@ -20,6 +37,13 @@
   <canvas id="mapCanvas"></canvas>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="map.js"></script>
+
+  <script>
+  document.getElementById("settingsToggle").addEventListener("click", function() {
+    const panel = document.getElementById("settingsPanel");
+    panel.classList.toggle("open");
+  });
+  </script>
 
 </body>
 </html>

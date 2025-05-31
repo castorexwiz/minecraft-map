@@ -75,6 +75,79 @@ function drawGrid() {
   ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, toCanvasZ(0) - 10); // ← Xが減る（西）
   ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", toCanvasX(0) + 10, canvas.height - 10); // ↓ Zが増える（南）
   ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", toCanvasX(0) + 10, 20); // ↑ Zが減る（北）
+
+  // --- 原点が見えてないときの軸ラベル補完（エスケープ版） ---
+  const zeroX = toCanvasX(0);
+  const zeroZ = toCanvasZ(0);
+  ctx.fillStyle = "blue";
+
+  // X軸（Z=0）が見えない場合 → 上 or 下に表示
+  if (zeroZ < 0) {
+    ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, 20); // Xが増える（東） →
+    ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, 20);                       // ← Xが減る（西）
+  } else if (zeroZ > canvas.height) {
+    ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, canvas.height - 10);
+    ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, canvas.height - 10);
+  }
+
+  // Z軸（X=0）が見えない場合 → 左 or 右に表示
+  if (zeroX < 0) {
+    ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", 10, 20);                       // ↑ Zが減る（北）
+    ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", 10, canvas.height - 10); // ↓ Zが増える（南）
+  } else if (zeroX > canvas.width) {
+    ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", canvas.width - 130, 20);
+    ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", canvas.width - 130, canvas.height - 10);
+  }
+
+  // --- 原点が見えてないときの補助線と数値表示（数字は端に寄せる） ---
+  ctx.strokeStyle = "#aaa";
+  ctx.fillStyle = "#888";
+  ctx.lineWidth = 1;
+
+  // 補助X軸（Z=0）線
+  if (zeroZ < 0 || zeroZ > canvas.height) {
+    const axisY = (zeroZ < 0) ? 0 : canvas.height - 0; // 上に消えたら上端、下に消えたら下端
+    ctx.beginPath();
+    ctx.moveTo(0, axisY);
+    ctx.lineTo(canvas.width, axisY);
+    ctx.stroke();
+
+    for (let i = -numLines; i <= numLines; i++) {
+      const worldX = i * gridSpacing;
+      const canvasX = toCanvasX(worldX);
+      if (canvasX >= 0 && canvasX <= canvas.width) {
+        ctx.fillText(worldX.toString(), canvasX + 2, axisY + ((zeroZ < 0) ? 12 : -2));
+      }
+    }
+  }
+
+// 補助Z軸（X=0）線
+if (zeroX < 0 || zeroX > canvas.width) {
+  const axisX = (zeroX < 0) ? 0 : canvas.width - 1; // 左に消えたら左端、右に消えたら右端
+  ctx.beginPath();
+  ctx.moveTo(axisX, 0);
+  ctx.lineTo(axisX, canvas.height);
+  ctx.stroke();
+
+  for (let i = -numLines; i <= numLines; i++) {
+    const worldZ = i * gridSpacing;
+    const canvasZ = toCanvasZ(worldZ);
+    if (canvasZ >= 0 && canvasZ <= canvas.height) {
+      const label = worldZ.toString();
+      let textX;
+      if (zeroX < 0) {
+        // 左端：右に少し余白とって表示
+        textX = axisX + 4;
+      } else {
+        // 右端：左にずらして表示（文字幅×文字数でざっくり補正）
+        textX = axisX - ctx.measureText(label).width - 4;
+      }
+      ctx.fillText(label, textX, canvasZ - 4);
+    }
+  }
+}
+
+
 }
 
 function drawPoint(x, z, name) {

@@ -1,0 +1,72 @@
+/* h1, h2 中央揃え */
+h1, h2 {
+  text-align: center;
+  font-family: sans-serif;
+  color: #333;
+  margin-top: 20px;
+}
+
+.map-description {
+  text-align: center;
+  font-family: sans-serif;
+  font-size: 14px;
+  color: #555;
+  margin-top: -10px;
+  margin-bottom: 20px;
+}
+
+.jump-form {
+  text-align: center;
+  margin-top: 10px;
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+.jump-form input {
+  width: 80px;
+  margin: 0 5px;
+}
+
+
+/* キャンバスの中央表示＋スタイル */
+#mapCanvas {
+  display: block;
+  margin: 30px auto;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 表全体：幅をマップに合わせる（800px） */
+table {
+  width: 800px;
+  margin: 20px auto;
+  border-collapse: collapse;
+  font-family: sans-serif;
+  font-size: 14px;
+  background-color: #fdfdfd;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ヘッダー行 */
+thead {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* セル共通 */
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+/* 偶数行に薄い背景 */
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* ホバー時にハイライト */
+tbody tr:hover {
+  background-color: #e0f7fa;
+  cursor: pointer;
+}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>マイクラ座標マップ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>マインクラフト座標マップ</h1>
+  <p class="map-description">表示は（X座標, Z座標）Yは省略 / マウスくるくる＆ドラッグで表示調整</p>
+
+<div class="jump-form">
+  現在地確認：
+  <label>X : <input type="number" id="inputX" /></label>
+  <label>Z : <input type="number" id="inputZ" /></label>
+  →　
+  <button onclick="markCustomPoint()">マップに表示</button>
+</div>
+
+  <canvas id="mapCanvas"></canvas>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="map.js"></script>
+</body>
+</html>

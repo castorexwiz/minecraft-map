@@ -266,6 +266,15 @@ function displayTable(data) {
   container.innerHTML = "<h2>\u5ea7\u6a19\u30ea\u30b9\u30c8</h2>"; // 座標一覧表
   document.body.appendChild(container);
   document.body.appendChild(table);
+
+  appendFooter();
+}
+
+function appendFooter() {
+  const footer = document.createElement("footer");
+  footer.className = "page-footer";
+  footer.innerHTML = '作成者: <a href="https://x.com/castor2141" target="_blank" rel="noopener noreferrer">@castor2141</a>';
+  document.body.appendChild(footer);
 }
 
 let globalData = [];

@@ -8,6 +8,14 @@ h1, h2 {
   margin-top: 20px;
 }
 
+.page-footer {
+  text-align: center;
+  font-family: sans-serif;
+  font-size: 14px;
+  color: #666;
+  margin: 40px 0 20px;
+}
+
 /* à–¾•”•ª‚Æƒ{ƒ^ƒ“•\¦ */
 .map-description {
   text-align: center;

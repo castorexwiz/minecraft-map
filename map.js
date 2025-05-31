@@ -9,8 +9,12 @@ let offsetZ = 0;
 let isDragging = false;
 let lastMouseX = 0;
 let lastMouseY = 0;
-
 let customPoint = null;
+
+// タッチ操作用
+let lastTouchDist = null;
+let lastTouchMid = null;
+let isTouchDragging = false;
 
 function toCanvasX(worldX) {
   return canvas.width / 2 + (worldX + offsetX) * scale; // Xが増えると右(東)
@@ -21,11 +25,11 @@ function toCanvasZ(worldZ) {
 
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = "12px sans-serif"; // マップ上のフォントサイズ・種類
-  const gridSpacing = 500; // グリッド表示間隔
-  const numLines = Math.ceil(10000 / gridSpacing); // グリッド表示する範囲
+  let fontSize = window.innerWidth < 1000 ? 18 : 12;
+  ctx.font = `${fontSize}px sans-serif`;
+  const gridSpacing = 500;
+  const numLines = Math.ceil(10000 / gridSpacing);
 
-  // X方向グリッド線
   for (let i = -numLines; i <= numLines; i++) {
     const worldX = i * gridSpacing;
     const canvasX = toCanvasX(worldX);
@@ -38,7 +42,6 @@ function drawGrid() {
     ctx.fillText(worldX.toString(), canvasX + 2, toCanvasZ(0) + 12);
   }
 
-  // Z方向グリッド線
   for (let i = -numLines; i <= numLines; i++) {
     const worldZ = i * gridSpacing;
     const canvasZ = toCanvasZ(worldZ);
@@ -51,7 +54,6 @@ function drawGrid() {
     ctx.fillText(worldZ.toString(), toCanvasX(0) + 4, canvasZ - 4);
   }
 
-  // 中心軸
   const xAxisZ = toCanvasZ(0);
   const zAxisX = toCanvasX(0);
   ctx.strokeStyle = "#888";
@@ -64,7 +66,6 @@ function drawGrid() {
   ctx.lineTo(zAxisX, canvas.height);
   ctx.stroke();
 
-  // 軸ラベル（エスケープ済み）
   ctx.fillStyle = "blue";
   ctx.fillText("\u2192 X\u304C\u5897\u3048\u308B (\u6771)", canvas.width - 130, toCanvasZ(0) - 10);
   ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, toCanvasZ(0) - 10);
@@ -150,7 +151,7 @@ function displayTable(data) {
   table.appendChild(tbody);
 
   const container = document.createElement("div");
-  container.innerHTML = "<h2>\u5ea7\u6a19\u30ea\u30b9\u30c8</h2>"; // 座標リスト
+  container.innerHTML = "<h2>\u5ea7\u6a19\u30ea\u30b9\u30c8</h2>";
   document.body.appendChild(container);
   document.body.appendChild(table);
 }
@@ -166,20 +167,20 @@ Papa.parse("location_data.csv", {
   }
 });
 
+// --- PC向けマウスイベント ---
 canvas.addEventListener("wheel", function(event) {
   event.preventDefault();
-  const zoomSpeed = 0.02; // ホイールスクロールの速度調整
+  const zoomSpeed = 0.02;
   const delta = event.deltaY > 0 ? -zoomSpeed : zoomSpeed;
   scale = Math.max(0.01, scale + delta);
   render(globalData);
-}, { passive: false }); // ページスクロール防止
+}, { passive: false });
 
 canvas.addEventListener("mousedown", function(event) {
   isDragging = true;
   lastMouseX = event.clientX;
   lastMouseY = event.clientY;
 });
-
 canvas.addEventListener("mousemove", function(event) {
   if (isDragging) {
     const dx = event.clientX - lastMouseX;
@@ -191,10 +192,48 @@ canvas.addEventListener("mousemove", function(event) {
     render(globalData);
   }
 });
+canvas.addEventListener("mouseup", () => isDragging = false);
+canvas.addEventListener("mouseleave", () => isDragging = false);
 
-canvas.addEventListener("mouseup", function() {
-  isDragging = false;
-});
-canvas.addEventListener("mouseleave", function() {
-  isDragging = false;
-});
+// --- モバイル向けタッチイベント ---
+canvas.addEventListener("touchstart", function(e) {
+  if (e.touches.length === 1) {
+    isTouchDragging = true;
+    lastMouseX = e.touches[0].clientX;
+    lastMouseY = e.touches[0].clientY;
+  } else if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    lastTouchDist = Math.hypot(dx, dy);
+    lastTouchMid = {
+      x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+      y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+    };
+  }
+}, { passive: false });
+
+canvas.addEventListener("touchmove", function(e) {
+  e.preventDefault();
+  if (e.touches.length === 1 && isTouchDragging) {
+    const dx = e.touches[0].clientX - lastMouseX;
+    const dy = e.touches[0].clientY - lastMouseY;
+    offsetX += dx / scale;
+    offsetZ += dy / scale;
+    lastMouseX = e.touches[0].clientX;
+    lastMouseY = e.touches[0].clientY;
+    render(globalData);
+  } else if (e.touches.length === 2 && lastTouchDist) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const newDist = Math.hypot(dx, dy);
+    const delta = newDist - lastTouchDist;
+    scale = Math.max(0.01, scale + delta * 0.001); // 調整係数
+    lastTouchDist = newDist;
+    render(globalData);
+  }
+}, { passive: false });
+
+canvas.addEventListener("touchend", function(e) {
+  isTouchDragging = false;
+  lastTouchDist = null;
+}, { passive: false });

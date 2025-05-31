@@ -96,3 +96,14 @@ tbody tr:hover {
   background-color: #e0f7fa;
   cursor: pointer;
 }
+
+@media screen and (max-width: 800px) {
+  canvas {
+    font-size: 18px; /* キャンバス外の文字用 */
+  }
+
+  body {
+    font-size: 18px; /* 一般的なテキストも大きく */
+  }
+}
+

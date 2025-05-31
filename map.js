@@ -1,6 +1,6 @@
 const canvas = document.getElementById("mapCanvas");
-canvas.width = 800;
-canvas.height = 800;
+canvas.width = 800;  // マップ表示範囲(横)
+canvas.height = 800; // マップ表示範囲(縦)
 
 const ctx = canvas.getContext("2d");
 let scale = 0.13; // 初期表示調整。canvas / scale = 表示ブロック数(±トータル)
@@ -25,11 +25,12 @@ function toCanvasZ(worldZ) {
 
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  let fontSize = window.innerWidth < 1000 ? 18 : 12;
+  let fontSize = window.innerWidth < 1000 ? 18 : 12; // PCとスマホのフォント設定
   ctx.font = `${fontSize}px sans-serif`;
-  const gridSpacing = 500;
-  const numLines = Math.ceil(10000 / gridSpacing);
+  const gridSpacing = 500; // グリッド表示間隔
+  const numLines = Math.ceil(50000 / gridSpacing); //最大グリッド配置範囲
 
+  // X方向グリッド線
   for (let i = -numLines; i <= numLines; i++) {
     const worldX = i * gridSpacing;
     const canvasX = toCanvasX(worldX);
@@ -42,6 +43,7 @@ function drawGrid() {
     ctx.fillText(worldX.toString(), canvasX + 2, toCanvasZ(0) + 12);
   }
 
+  // Z方向グリッド線
   for (let i = -numLines; i <= numLines; i++) {
     const worldZ = i * gridSpacing;
     const canvasZ = toCanvasZ(worldZ);
@@ -54,6 +56,7 @@ function drawGrid() {
     ctx.fillText(worldZ.toString(), toCanvasX(0) + 4, canvasZ - 4);
   }
 
+  // 中心軸
   const xAxisZ = toCanvasZ(0);
   const zAxisX = toCanvasX(0);
   ctx.strokeStyle = "#888";
@@ -66,6 +69,7 @@ function drawGrid() {
   ctx.lineTo(zAxisX, canvas.height);
   ctx.stroke();
 
+  // 軸ラベル(エスケープ済み)
   ctx.fillStyle = "blue";
   ctx.fillText("\u2192 X\u304C\u5897\u3048\u308B (\u6771)", canvas.width - 130, toCanvasZ(0) - 10);
   ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, toCanvasZ(0) - 10);
@@ -151,7 +155,7 @@ function displayTable(data) {
   table.appendChild(tbody);
 
   const container = document.createElement("div");
-  container.innerHTML = "<h2>\u5ea7\u6a19\u30ea\u30b9\u30c8</h2>";
+  container.innerHTML = "<h2>\u5ea7\u6a19\u30ea\u30b9\u30c8</h2>"; // 座標一覧表
   document.body.appendChild(container);
   document.body.appendChild(table);
 }
@@ -170,11 +174,11 @@ Papa.parse("location_data.csv", {
 // --- PC向けマウスイベント ---
 canvas.addEventListener("wheel", function(event) {
   event.preventDefault();
-  const zoomSpeed = 0.02;
+  const zoomSpeed = 0.02; // マウスホイールのスピード調整
   const delta = event.deltaY > 0 ? -zoomSpeed : zoomSpeed;
   scale = Math.max(0.01, scale + delta);
   render(globalData);
-}, { passive: false });
+}, { passive: false }); // ページ同時スクロール帽子
 
 canvas.addEventListener("mousedown", function(event) {
   isDragging = true;

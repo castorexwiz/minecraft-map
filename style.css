@@ -6,6 +6,7 @@ h1, h2 {
   margin-top: 20px;
 }
 
+/* 説明部分とボタン表示 */
 .map-description {
   text-align: center;
   font-family: sans-serif;
@@ -53,7 +54,6 @@ h1, h2 {
   background-color: #45a049;
 }
 
-
 /* キャンバスの中央表示＋スタイル */
 #mapCanvas {
   display: block;
@@ -97,7 +97,7 @@ tbody tr:hover {
   cursor: pointer;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 820px) {
   canvas {
     font-size: 18px; /* キャンバス外の文字用 */
   }
@@ -106,4 +106,3 @@ tbody tr:hover {
     font-size: 18px; /* 一般的なテキストも大きく */
   }
 }
-

@@ -8,5 +8,5 @@ Minecraftの座標データをCSVで用意することでグリッドの入っ�
 - 現在位置確認にX座標とZ座標を入力すると現在地点が黄色の丸で表示されます
 - マップのあとにCSVデータの内容が表示されます
 
-## GitHub Pages
+## サンプルページ
 https://castorexwiz.github.io/minecraft-map/

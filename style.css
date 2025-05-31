@@ -1,3 +1,5 @@
+/* Style Sheet for Minecraft-Map */
+
 /* h1, h2 ’†‰›‘µ‚¦ */
 h1, h2 {
   text-align: center;
@@ -17,7 +19,7 @@ h1, h2 {
 }
 
 .jump-form {
-  max-width: 500px;
+  max-width: 530px;
   margin: 20px auto;
   padding: 12px 16px;
   border: 1px solid #ccc;

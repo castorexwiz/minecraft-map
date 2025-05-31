@@ -3,7 +3,7 @@ canvas.width = 800;  // マップ表示範囲(横)
 canvas.height = 800; // マップ表示範囲(縦)
 
 const ctx = canvas.getContext("2d");
-let scale = 0.13; // 初期表示調整。canvas / scale = 表示ブロック数(±トータル)
+let scale = 0.35; // 初期表示調整。canvas / scale = 表示ブロック数(±トータル)
 let offsetX = 0;
 let offsetZ = 0;
 let isDragging = false;

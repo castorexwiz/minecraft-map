@@ -1,9 +1,9 @@
 const canvas = document.getElementById("mapCanvas");
-canvas.width = 800;  // ƒ}ƒbƒv•\¦”ÍˆÍ(‰¡)
-canvas.height = 800; // ƒ}ƒbƒv•\¦”ÍˆÍ(c)
+canvas.width = 800;  // ãƒãƒƒãƒ—è¡¨ç¤ºç¯„å›²(æ¨ª)
+canvas.height = 800; // ãƒãƒƒãƒ—è¡¨ç¤ºç¯„å›²(ç¸¦)
 
 const ctx = canvas.getContext("2d");
-let scale = 0.35; // ‰Šú•\¦’²®Bcanvas / scale = •\¦ƒuƒƒbƒN”(}ƒg[ƒ^ƒ‹)
+let scale = 0.35; // åˆæœŸè¡¨ç¤ºèª¿æ•´ã€‚canvas / scale = è¡¨ç¤ºãƒ–ãƒ­ãƒƒã‚¯æ•°(Â±ãƒˆãƒ¼ã‚¿ãƒ«)
 let offsetX = 0;
 let offsetZ = 0;
 let isDragging = false;
@@ -11,26 +11,41 @@ let lastMouseX = 0;
 let lastMouseY = 0;
 let customPoint = null;
 
-// ƒ^ƒbƒ`‘€ì—p
+
+// åˆ—åã®å®šæ•°ãƒãƒƒãƒ”ãƒ³ã‚°(CSVã®åˆ—åã‚’å¤‰æ›´ã—ãŸæ™‚ã¯ã“ã“ã‚’ä¿®æ­£)
+const COL_LOC_NAME = "location_name";
+const COL_X = "posX";
+const COL_Z = "posZ";
+const COL_COMMENT = "comment";
+
+// HTMLã«è¡¨ç¤ºã™ã‚‹ä¸€è¦§è¡¨ã®åˆ—åã‚’ã“ã“ã§è¨­å®š
+const HEADER_MAP = {
+  [COL_LOC_NAME]: "å ´æ‰€",
+  [COL_X]: "Xåº§æ¨™",
+  [COL_Z]: "Zåº§æ¨™",
+  [COL_COMMENT]: "ãƒ¡ãƒ¢"
+};
+
+// ã‚¿ãƒƒãƒæ“ä½œç”¨
 let lastTouchDist = null;
 let lastTouchMid = null;
 let isTouchDragging = false;
 
 function toCanvasX(worldX) {
-  return canvas.width / 2 + (worldX + offsetX) * scale; // X‚ª‘‚¦‚é‚Æ‰E(“Œ)
+  return canvas.width / 2 + (worldX + offsetX) * scale; // XãŒå¢—ãˆã‚‹ã¨å³(æ±)
 }
 function toCanvasZ(worldZ) {
-  return canvas.height / 2 + (worldZ + offsetZ) * scale; // Z‚ª‘‚¦‚é‚Æ‰º(“ì)
+  return canvas.height / 2 + (worldZ + offsetZ) * scale; // ZãŒå¢—ãˆã‚‹ã¨ä¸‹(å—)
 }
 
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  let fontSize = window.innerWidth < 820 ? 22 : 14; // PC‚ÆƒXƒ}ƒz‚ÌƒtƒHƒ“ƒgİ’è
+  let fontSize = window.innerWidth < 820 ? 22 : 14; // PCã¨ã‚¹ãƒãƒ›ã®ãƒ•ã‚©ãƒ³ãƒˆè¨­å®š
   ctx.font = `${fontSize}px sans-serif`;
-  const gridSpacing = 500; // ƒOƒŠƒbƒh•\¦ŠÔŠu
-  const numLines = Math.ceil(50000 / gridSpacing); //Å‘åƒOƒŠƒbƒh”z’u”ÍˆÍ
+  const gridSpacing = 500; // ã‚°ãƒªãƒƒãƒ‰è¡¨ç¤ºé–“éš”
+  const numLines = Math.ceil(50000 / gridSpacing); //æœ€å¤§ã‚°ãƒªãƒƒãƒ‰é…ç½®ç¯„å›²
 
-  // X•ûŒüƒOƒŠƒbƒhü
+  // Xæ–¹å‘ã‚°ãƒªãƒƒãƒ‰ç·š
   for (let i = -numLines; i <= numLines; i++) {
     const worldX = i * gridSpacing;
     const canvasX = toCanvasX(worldX);
@@ -43,7 +58,7 @@ function drawGrid() {
     ctx.fillText(worldX.toString(), canvasX + 2, toCanvasZ(0) + 12);
   }
 
-  // Z•ûŒüƒOƒŠƒbƒhü
+  // Zæ–¹å‘ã‚°ãƒªãƒƒãƒ‰ç·š
   for (let i = -numLines; i <= numLines; i++) {
     const worldZ = i * gridSpacing;
     const canvasZ = toCanvasZ(worldZ);
@@ -56,7 +71,7 @@ function drawGrid() {
     ctx.fillText(worldZ.toString(), toCanvasX(0) + 4, canvasZ - 4);
   }
 
-  // ’†S²
+  // ä¸­å¿ƒè»¸
   const xAxisZ = toCanvasZ(0);
   const zAxisX = toCanvasX(0);
   ctx.strokeStyle = "#888";
@@ -69,44 +84,44 @@ function drawGrid() {
   ctx.lineTo(zAxisX, canvas.height);
   ctx.stroke();
 
-  // ²ƒ‰ƒxƒ‹(ƒGƒXƒP[ƒvÏ‚İ)
+  // è»¸ãƒ©ãƒ™ãƒ«(ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—æ¸ˆã¿)
   ctx.fillStyle = "blue";
-  ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, toCanvasZ(0) - 10); // X‚ª‘‚¦‚éi“Œj ¨
-  ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, toCanvasZ(0) - 10);                       // © X‚ªŒ¸‚éi¼j
-  ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", toCanvasX(0) + 10, canvas.height - 10); // « Z‚ª‘‚¦‚éi“ìj
-  ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", toCanvasX(0) + 10, 20);                       // ª Z‚ªŒ¸‚éi–kj
+  ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, toCanvasZ(0) - 10); // XãŒå¢—ãˆã‚‹ï¼ˆæ±ï¼‰ â†’
+  ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, toCanvasZ(0) - 10);                       // â† XãŒæ¸›ã‚‹ï¼ˆè¥¿ï¼‰
+  ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", toCanvasX(0) + 10, canvas.height - 10); // â†“ ZãŒå¢—ãˆã‚‹ï¼ˆå—ï¼‰
+  ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", toCanvasX(0) + 10, 20);                       // â†‘ ZãŒæ¸›ã‚‹ï¼ˆåŒ—ï¼‰
 
-  // --- Œ´“_‚ªŒ©‚¦‚Ä‚È‚¢‚Æ‚«‚Ì²ƒ‰ƒxƒ‹•âŠ®(ƒGƒXƒP[ƒvÏ‚İ) ---
+  // --- åŸç‚¹ãŒè¦‹ãˆã¦ãªã„ã¨ãã®è»¸ãƒ©ãƒ™ãƒ«è£œå®Œ(ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—æ¸ˆã¿) ---
   const zeroX = toCanvasX(0);
   const zeroZ = toCanvasZ(0);
   ctx.fillStyle = "blue";
 
-  // X²iZ=0j‚ªŒ©‚¦‚È‚¢ê‡ ¨ ã or ‰º‚É•\¦
+  // Xè»¸ï¼ˆZ=0ï¼‰ãŒè¦‹ãˆãªã„å ´åˆ â†’ ä¸Š or ä¸‹ã«è¡¨ç¤º
   if (zeroZ < 0) {
-    ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, 20); // X‚ª‘‚¦‚éi“Œj ¨
-    ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, 20);                       // © X‚ªŒ¸‚éi¼j
+    ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, 20); // XãŒå¢—ãˆã‚‹ï¼ˆæ±ï¼‰ â†’
+    ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, 20);                       // â† XãŒæ¸›ã‚‹ï¼ˆè¥¿ï¼‰
   } else if (zeroZ > canvas.height) {
     ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, canvas.height - 10);
     ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, canvas.height - 10);
   }
 
-  // Z²iX=0j‚ªŒ©‚¦‚È‚¢ê‡ ¨ ¶ or ‰E‚É•\¦
+  // Zè»¸ï¼ˆX=0ï¼‰ãŒè¦‹ãˆãªã„å ´åˆ â†’ å·¦ or å³ã«è¡¨ç¤º
   if (zeroX < 0) {
-    ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", 10, 20);                       // ª Z‚ªŒ¸‚éi–kj
-    ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", 10, canvas.height - 10); // « Z‚ª‘‚¦‚éi“ìj
+    ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", 10, 20);                       // â†‘ ZãŒæ¸›ã‚‹ï¼ˆåŒ—ï¼‰
+    ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", 10, canvas.height - 10); // â†“ ZãŒå¢—ãˆã‚‹ï¼ˆå—ï¼‰
   } else if (zeroX > canvas.width) {
     ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", canvas.width - 130, 20);
     ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", canvas.width - 130, canvas.height - 10);
   }
 
-  // --- Œ´“_‚ªŒ©‚¦‚Ä‚È‚¢‚Æ‚«‚Ì•â•ü‚Æ”’l•\¦i”š‚Í’[‚ÉŠñ‚¹‚éj ---
+  // --- åŸç‚¹ãŒè¦‹ãˆã¦ãªã„ã¨ãã®è£œåŠ©ç·šã¨æ•°å€¤è¡¨ç¤ºï¼ˆæ•°å­—ã¯ç«¯ã«å¯„ã›ã‚‹ï¼‰ ---
   ctx.strokeStyle = "#aaa";
   ctx.fillStyle = "#888";
   ctx.lineWidth = 1;
 
-  // •â•X²iZ=0jü
+  // è£œåŠ©Xè»¸ï¼ˆZ=0ï¼‰ç·š
   if (zeroZ < 0 || zeroZ > canvas.height) {
-    const axisY = (zeroZ < 0) ? 0 : canvas.height - 0; // ã‚ÉÁ‚¦‚½‚çã’[A‰º‚ÉÁ‚¦‚½‚ç‰º’[
+    const axisY = (zeroZ < 0) ? 0 : canvas.height - 0; // ä¸Šã«æ¶ˆãˆãŸã‚‰ä¸Šç«¯ã€ä¸‹ã«æ¶ˆãˆãŸã‚‰ä¸‹ç«¯
     ctx.beginPath();
     ctx.moveTo(0, axisY);
     ctx.lineTo(canvas.width, axisY);
@@ -121,9 +136,9 @@ function drawGrid() {
     }
   }
 
-  // •â•Z²iX=0jü
+  // è£œåŠ©Zè»¸ï¼ˆX=0ï¼‰ç·š
   if (zeroX < 0 || zeroX > canvas.width) {
-    const axisX = (zeroX < 0) ? 0 : canvas.width - 1; // ¶‚ÉÁ‚¦‚½‚ç¶’[A‰E‚ÉÁ‚¦‚½‚ç‰E’[
+    const axisX = (zeroX < 0) ? 0 : canvas.width - 1; // å·¦ã«æ¶ˆãˆãŸã‚‰å·¦ç«¯ã€å³ã«æ¶ˆãˆãŸã‚‰å³ç«¯
     ctx.beginPath();
     ctx.moveTo(axisX, 0);
     ctx.lineTo(axisX, canvas.height);
@@ -136,10 +151,10 @@ function drawGrid() {
         const label = worldZ.toString();
         let textX;
         if (zeroX < 0) {
-          // ¶’[F‰E‚É­‚µ—]”’‚Æ‚Á‚Ä•\¦
+          // å·¦ç«¯ï¼šå³ã«å°‘ã—ä½™ç™½ã¨ã£ã¦è¡¨ç¤º
           textX = axisX + 4;
         } else {
-          // ‰E’[F¶‚É‚¸‚ç‚µ‚Ä•\¦i•¶š•~•¶š”‚Å‚´‚Á‚­‚è•â³j
+          // å³ç«¯ï¼šå·¦ã«ãšã‚‰ã—ã¦è¡¨ç¤ºï¼ˆæ–‡å­—å¹…Ã—æ–‡å­—æ•°ã§ã–ã£ãã‚Šè£œæ­£ï¼‰
           textX = axisX - ctx.measureText(label).width - 4;
         }
         ctx.fillText(label, textX, canvasZ - 4);
@@ -178,9 +193,9 @@ function drawCustomPoint(x, z) {
 function render(data) {
   drawGrid();
   data.forEach(row => {
-    const x = parseInt(row.x);
-    const z = parseInt(row.z);
-    const name = row.name;
+    const x = parseInt(row[COL_X]);
+    const z = parseInt(row[COL_Z]);
+    const name = row[COL_LOC_NAME];
     if (!isNaN(x) && !isNaN(z)) {
       drawPoint(x, z, name);
     }
@@ -204,9 +219,9 @@ function displayTable(data) {
   table.border = "1";
   const thead = document.createElement("thead");
   const headerRow = document.createElement("tr");
-  ["name", "x", "z", "note"].forEach(col => {
+  [COL_LOC_NAME, COL_X, COL_Z, COL_COMMENT].forEach(col => {
     const th = document.createElement("th");
-    th.textContent = col;
+    th.textContent = HEADER_MAP[col];
     headerRow.appendChild(th);
   });
   thead.appendChild(headerRow);
@@ -214,9 +229,9 @@ function displayTable(data) {
 
   const tbody = document.createElement("tbody");
   data.forEach(row => {
-    if (row.name && row.x && row.z) {
+    if (row[COL_LOC_NAME] && row[COL_X] && row[COL_Z]) {
       const tr = document.createElement("tr");
-      [row.name, row.x, row.z, row.note || ""].forEach(text => {
+      [row[COL_LOC_NAME], row[COL_X], row[COL_Z], row[COL_COMMENT] || ""].forEach(text => {
         const td = document.createElement("td");
         td.textContent = text;
         tr.appendChild(td);
@@ -227,7 +242,7 @@ function displayTable(data) {
   table.appendChild(tbody);
 
   const container = document.createElement("div");
-  container.innerHTML = "<h2>\u5ea7\u6a19\u30ea\u30b9\u30c8</h2>"; // À•Wˆê——•\
+  container.innerHTML = "<h2>\u5ea7\u6a19\u30ea\u30b9\u30c8</h2>"; // åº§æ¨™ä¸€è¦§è¡¨
   document.body.appendChild(container);
   document.body.appendChild(table);
 }
@@ -243,14 +258,14 @@ Papa.parse("location_data.csv", {
   }
 });
 
-// --- PCŒü‚¯ƒ}ƒEƒXƒCƒxƒ“ƒg ---
+// --- PCå‘ã‘ãƒã‚¦ã‚¹ã‚¤ãƒ™ãƒ³ãƒˆ ---
 canvas.addEventListener("wheel", function(event) {
   event.preventDefault();
-  const zoomSpeed = 0.02; // ƒ}ƒEƒXƒzƒC[ƒ‹‚ÌƒXƒs[ƒh’²®
+  const zoomSpeed = 0.02; // ãƒã‚¦ã‚¹ãƒ›ã‚¤ãƒ¼ãƒ«ã®ã‚¹ãƒ”ãƒ¼ãƒ‰èª¿æ•´
   const delta = event.deltaY > 0 ? -zoomSpeed : zoomSpeed;
   scale = Math.max(0.01, scale + delta);
   render(globalData);
-}, { passive: false }); // ƒy[ƒW“¯ƒXƒNƒ[ƒ‹–Xq
+}, { passive: false }); // ãƒšãƒ¼ã‚¸åŒæ™‚ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«å¸½å­
 
 canvas.addEventListener("mousedown", function(event) {
   isDragging = true;
@@ -271,7 +286,7 @@ canvas.addEventListener("mousemove", function(event) {
 canvas.addEventListener("mouseup", () => isDragging = false);
 canvas.addEventListener("mouseleave", () => isDragging = false);
 
-// --- ƒ‚ƒoƒCƒ‹Œü‚¯ƒ^ƒbƒ`ƒCƒxƒ“ƒg ---
+// --- ãƒ¢ãƒã‚¤ãƒ«å‘ã‘ã‚¿ãƒƒãƒã‚¤ãƒ™ãƒ³ãƒˆ ---
 canvas.addEventListener("touchstart", function(e) {
   if (e.touches.length === 1) {
     isTouchDragging = true;
@@ -303,7 +318,7 @@ canvas.addEventListener("touchmove", function(e) {
     const dy = e.touches[0].clientY - e.touches[1].clientY;
     const newDist = Math.hypot(dx, dy);
     const delta = newDist - lastTouchDist;
-    scale = Math.max(0.01, scale + delta * 0.001); // ’²®ŒW”
+    scale = Math.max(0.01, scale + delta * 0.001); // èª¿æ•´ä¿‚æ•°
     lastTouchDist = newDist;
     render(globalData);
   }

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>座標と方角の見方</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      line-height: 1.6;
+      margin: 40px 24px;
+      color: #333;
+      background-color: #fdfdfd;
+      max-width: 780px;
+    }
+    h1 {
+      font-size: 26px;
+      margin-bottom: 24px;
+    }
+    h2 {
+      font-size: 20px;
+      margin-top: 32px;
+    }
+    p, li {
+      font-size: 15px;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    code {
+      background-color: #eee;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    .sample-image {
+      margin: 24px 0 8px 0;
+      max-width: 100%;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .image-caption {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 24px;
+    }
+    .footer {
+      font-size: 13px;
+      color: #777;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>座標と方角の見方</h1>
+
+  <p><code>F3</code> を押して表示される情報のうち、<strong>座標</strong>と<strong>方角</strong>の2箇所が重要です。</p>
+
+  <img src="picture.png" alt="F3で表示される座標と方角の例" class="sample-image">
+  <div class="image-caption">▲ F3キーで表示された座標と方角の例（XYZとpositive X）</div>
+
+  <h2>座標（XYZ: ● / ● / ●）</h2>
+  <ul>
+    <li>現在位置の座標を表示します。</li>
+    <li>通常は <strong>X</strong>（横）と <strong>Z</strong>（縦）を見て移動します。</li>
+    <li><strong>Y</strong> は高さを示します。</li>
+  </ul>
+
+  <h2>方角（3行下の Toward ● ●）</h2>
+  <ul>
+    <li>向いている方角を表示します。</li>
+    <li>例：
+      <ul>
+        <li><code>positive X</code>（ポジティブX） → Xが増える方向（東）</li>
+        <li><code>negative X</code>（ネガティブX） → Xが減る方向（西）</li>
+        <li><code>positive Z</code>（ポジティブZ） → Zが増える方向（南）</li>
+        <li><code>negative Z</code>（ネガティブZ） → Zが減る方向（北）</li>
+      </ul>
+    </li>
+    <li>ただし、斜め方向（北東・南東など）もまとめて「ポジティブX（東）」などと表示されます。</li>
+    <li>ブロックにまっすぐ向くと「真東（純粋なポジティブX）」のように正確な方向が分かります。</li>
+  </ul>
+
+  <h2>その他の情報</h2>
+  <ul>
+    <li>pisitive X などの後にあるカッコ内の数字、1つめは方角を－180から＋180の数字で示しています。
+    <ul>
+      <li>北(-180)、東(-90)、南(0)、西(90)。</li>
+      <li>0/90/180を目安にすれば各方角の正面を向きますが、ブロックの向きを見て合わせるほうが早いです。</li>
+    </ul>
+    <li>pisitive X などの次の行は明るさを0～15で示しています。7以下は敵が湧きます。</li>
+    <ul>
+      <li>カッコ内は内訳で、空からの明るさと光源ブロックからの明るさです。</li>
+    </ul>
+    <li>上記画像の一番下の文字はバイオームを示しています。</li>
+  </ul>
+
+  <div class="footer">
+    作成者: <a href="https://x.com/castor2141" target="_blank" rel="noopener noreferrer">@castor2141</a>
+  </div>
+
+</body>
+</html>

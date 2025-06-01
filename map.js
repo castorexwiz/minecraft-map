@@ -16,13 +16,15 @@ const COL_LOC_NAME = "location_name";
 const COL_X = "posX";
 const COL_Z = "posZ";
 const COL_COMMENT = "comment";
+const COL_URL = "url";
 
 // HTMLに表示する一覧表の列名をここで設定
 const HEADER_MAP = {
   [COL_LOC_NAME]: "場所",
   [COL_X]: "X座標",
   [COL_Z]: "Z座標",
-  [COL_COMMENT]: "メモ"
+  [COL_COMMENT]: "メモ",
+  [COL_URL]: "関連URL"
 };
 
 // タッチ操作用
@@ -260,7 +262,7 @@ function displayTable(data) {
   table.border = "1";
   const thead = document.createElement("thead");
   const headerRow = document.createElement("tr");
-  [COL_LOC_NAME, COL_X, COL_Z, COL_COMMENT].forEach(col => {
+  [COL_LOC_NAME, COL_X, COL_Z, COL_COMMENT, COL_URL].forEach(col => {
     const th = document.createElement("th");
     th.textContent = HEADER_MAP[col];
     headerRow.appendChild(th);
@@ -269,17 +271,48 @@ function displayTable(data) {
   table.appendChild(thead);
 
   const tbody = document.createElement("tbody");
+
   data.forEach(row => {
     if (row[COL_LOC_NAME] && row[COL_X] && row[COL_Z]) {
       const tr = document.createElement("tr");
-      [row[COL_LOC_NAME], row[COL_X], row[COL_Z], row[COL_COMMENT] || ""].forEach(text => {
+
+      // 通常列（文字列として表示）
+      [COL_LOC_NAME, COL_X, COL_Z, COL_COMMENT].forEach(col => {
         const td = document.createElement("td");
-        td.textContent = text;
+        td.textContent = row[col] || "";
         tr.appendChild(td);
       });
+      
+      // URL列の処理
+      const urlCell = document.createElement("td");
+      const urlValue = (row[COL_URL] || "").trim();
+      if (urlValue.includes("||")) {
+        // 「ラベル||URL」形式
+        const [label, link] = urlValue.split("||");
+        const a = document.createElement("a");
+        a.href = link.trim();
+        a.textContent = label.trim() || link.trim();
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        urlCell.appendChild(a);
+      } else if (urlValue.startsWith("http")) {
+        // URLのみ
+        const a = document.createElement("a");
+        a.href = urlValue;
+        a.textContent = urlValue;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        urlCell.appendChild(a);
+      } else {
+        // ラベルのみ or 空欄
+        urlCell.textContent = urlValue;
+      }
+  
+      tr.appendChild(urlCell);
       tbody.appendChild(tr);
     }
   });
+  
   table.appendChild(tbody);
   tableWrapper.appendChild(table);
 

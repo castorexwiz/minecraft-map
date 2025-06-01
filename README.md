@@ -1,5 +1,7 @@
 # Minecraft Coordinate Map
 
+🇯🇵 日本語版はこちら → [README.ja.md](./README.ja.md)
+
 This is a web page that visualizes Minecraft coordinates on a grid-based map using CSV data.
 
 It is an unofficial tool created by an individual developer (me!) to enhance the enjoyment of watching **[Riko Shiga](https://www.youtube.com/@RikoShiga)**, a VTuber from the Japanese group *NIJISANJI*, play Minecraft. It also served as a project to experiment with programming and low-code development.

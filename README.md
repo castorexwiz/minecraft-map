@@ -4,7 +4,7 @@
 
 This is a web page that visualizes Minecraft coordinates on a grid-based map using CSV data.
 
-It is an unofficial tool created by an individual developer (me!) to enhance the enjoyment of watching **[Riko Shiga](https://www.youtube.com/@RikoShiga)**, a VTuber from the Japanese group *NIJISANJI*, play Minecraft. It also served as a project to experiment with programming and low-code development.
+It is an unofficial tool created by an individual developer (me!) to enhance the enjoyment of watching **[Riko Shiga](https://www.youtube.com/@ShigaRiko)**, a VTuber from the Japanese group *NIJISANJI*, play Minecraft. It also served as a project to experiment with programming and low-code development.
 
 ## Features
 

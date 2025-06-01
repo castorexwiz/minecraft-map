@@ -236,6 +236,26 @@ function markCustomPoint() {
 }
 
 function displayTable(data) {
+  const wrapper = document.createElement("div");
+  wrapper.id = "tableContainer";
+
+  const toggleBtn = document.createElement("button");
+  toggleBtn.id = "tableToggleBtn";
+  toggleBtn.textContent = "▼ 座標リストを表示";
+  toggleBtn.addEventListener("click", () => {
+    tableWrapper.classList.toggle("open");
+    toggleBtn.textContent = tableWrapper.classList.contains("open")
+      ? "▲ 座標リストを非表示"
+      : "▼ 座標リストを表示";
+  });
+
+  const tableWrapper = document.createElement("div");
+  tableWrapper.id = "coordTableWrapper";
+
+  const title = document.createElement("h2");
+  title.textContent = "座標リスト";
+  tableWrapper.appendChild(title);
+
   const table = document.createElement("table");
   table.border = "1";
   const thead = document.createElement("thead");
@@ -261,14 +281,15 @@ function displayTable(data) {
     }
   });
   table.appendChild(tbody);
+  tableWrapper.appendChild(table);
 
-  const container = document.createElement("div");
-  container.innerHTML = "<h2>\u5ea7\u6a19\u30ea\u30b9\u30c8</h2>"; // 座標一覧表
-  document.body.appendChild(container);
-  document.body.appendChild(table);
+  wrapper.appendChild(toggleBtn);
+  wrapper.appendChild(tableWrapper);
+  document.body.appendChild(wrapper);
 
   appendFooter();
 }
+
 
 function appendFooter() {
   const footer = document.createElement("footer");

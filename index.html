@@ -39,9 +39,12 @@
   <script src="map.js"></script>
 
   <script>
-  document.getElementById("settingsToggle").addEventListener("click", function() {
-    const panel = document.getElementById("settingsPanel");
-    panel.classList.toggle("open");
+  const settingsBtn = document.getElementById("settingsToggle");
+  const settingsPanel = document.getElementById("settingsPanel");
+  
+  settingsBtn.addEventListener("click", function() {
+    const isOpen = settingsPanel.classList.toggle("open");
+    settingsBtn.textContent = isOpen ? "閉じる" : "設定";
   });
   </script>
 

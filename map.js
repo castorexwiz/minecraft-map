@@ -287,18 +287,13 @@ function displayTable(data) {
   wrapper.appendChild(tableWrapper);
   document.body.appendChild(wrapper);
 
-  appendFooter();
+  const tableArea = document.getElementById("tableArea");
+  tableArea.appendChild(wrapper);
 }
 
-
-function appendFooter() {
-  const footer = document.createElement("footer");
-  footer.className = "page-footer";
-  footer.innerHTML = '作成者: <a href="https://x.com/castor2141" target="_blank" rel="noopener noreferrer">@castor2141</a>';
-  document.body.appendChild(footer);
-}
-
+// データ読み込み -> マップ描画 -> 表の表示
 let globalData = [];
+
 Papa.parse("location_data.csv", {
   download: true,
   header: true,

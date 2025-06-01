@@ -1,52 +1,56 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>しがりこソロマイクラ座標マップ（非公式）</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <h1>しがりこソロマイクラ座標マップ（非公式）</h1>
-  <p class="map-description">座標は（ X , Z ）でYは省略 / マウスドラッグとホイールで表示調整</p>
-
-  <!-- 設定ボタン（右端固定） -->
-  <button id="settingsToggle" class="settings-toggle">設定</button>
-  
-  <!-- 設定パネル（右からスライド） -->
-  <div id="settingsPanel" class="settings-panel">
-    <h2>表示設定</h2>
-    <p>
-      <label for="gridSpacingInput">グリッド間隔　</label>
-      <input type="number" id="gridSpacingInput" value="200" />
-    </p>
-    <p>
-      <label for="blockRangeInput">表示範囲設定</label>
-      ±<input type="number" id="blockRangeInput" value="1000" />
-    </p>
-    <button onclick="applySettings()">設定反映（表示リセット）</button>
-  </div>
-
-  <div class="jump-form">
-    現在地の確認　
-    <label>X : <input type="number" id="inputX" /></label>
-    <label>Z : <input type="number" id="inputZ" /></label>
-    →　
-    <button onclick="markCustomPoint()">マップ上に表示</button>
-  </div>
-
-  <canvas id="mapCanvas"></canvas>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="map.js"></script>
-
-  <script>
-  const settingsBtn = document.getElementById("settingsToggle");
-  const settingsPanel = document.getElementById("settingsPanel");
-  
-  settingsBtn.addEventListener("click", function() {
-    const isOpen = settingsPanel.classList.toggle("open");
-    settingsBtn.textContent = isOpen ? "閉じる" : "設定";
-  });
-  </script>
-
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <title>しがりこソロマイクラ座標マップ（非公式）</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header>
+    <h1>しがりこソロマイクラ座標マップ（非公式）</h1>
+      <p class="map-description">座標は（ X , Z ）でYは省略 / マウスドラッグとホイールで表示調整</p>
+      <!-- 設定ボタン（右端固定） -->
+      <button id="settingsToggle" class="settings-toggle">設定</button>
+    </header>
+    <main id="mainContent">
+      <!-- 設定パネル（右からスライド） -->
+      <aside id="settingsPanel" class="settings-panel">
+        <h2>表示設定</h2>
+        <p>
+          <label for="gridSpacingInput">グリッド間隔　</label>
+          <input type="number" id="gridSpacingInput" value="200" />
+        </p>
+        <p>
+          <label for="blockRangeInput">表示範囲設定</label>
+          ±<input type="number" id="blockRangeInput" value="1000" />
+        </p>
+        <button onclick="applySettings()">設定反映（表示リセット）</button>
+      </aside>
+      <!-- タイトル下のパネル -->
+      <section class="jump-form">
+        現在地の確認　
+        <label>X : <input type="number" id="inputX" /></label>
+        <label>Z : <input type="number" id="inputZ" /></label>
+        →　
+        <button onclick="markCustomPoint()">マップ上に表示</button>
+      </section>
+      <!-- JavaScriptからのデータ挿入エリア -->
+      <canvas id="mapCanvas"></canvas>
+      <div id="tableArea"></div>
+    </main>
+    <footer class="page-footer">
+      作成者: <a href="https://x.com/castor2141" target="_blank" rel="noopener noreferrer">@castor2141</a>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="map.js"></script>
+    <!-- ドロワーのスクリプトはHTML内に完結 -->
+    <script>
+      const settingsBtn = document.getElementById("settingsToggle");
+      const settingsPanel = document.getElementById("settingsPanel");
+      settingsBtn.addEventListener("click", function() {
+        const isOpen = settingsPanel.classList.toggle("open");
+        settingsBtn.textContent = isOpen ? "閉じる" : "設定";
+      });
+    </script>
+  </body>
 </html>

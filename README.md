@@ -12,6 +12,7 @@ It is an unofficial tool created by an individual developer (me!) to enhance the
 - You can pan and zoom the map using your mouse (drag and scroll).
 - Enter X and Z coordinates into the input box to mark your current location with a yellow circle.
 - A table at the bottom of the page shows the contents of the CSV data.
+- Entering "text||URL" in the Related URL column displays a clickable text link
 - A guide page explaining how to read coordinates and directions in Minecraft is also available (currently under adjustment and not yet linked from the top page).
 
 ## License

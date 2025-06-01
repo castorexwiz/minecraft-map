@@ -1,6 +1,6 @@
 # Minecraft Coordinate Map
 
-🇯🇵 日本語版はこちら → [README.ja.md](./README.ja.md)
+日本語版はこちら → [README.ja.md](./README.ja.md)
 
 This is a web page that visualizes Minecraft coordinates on a grid-based map using CSV data.
 

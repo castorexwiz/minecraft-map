@@ -55,13 +55,13 @@ function getScale() {
 }
 
 function drawGrid() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // キャンバスクリア＆再描画準備
   let fontSize = window.innerWidth < 820 ? 22 : 14; // PCとスマホのフォント設定
   ctx.font = `${fontSize}px sans-serif`;
-const gridSpacing = getGridSpacing();
-  const numLines = Math.ceil(50000 / gridSpacing); //最大グリッド配置範囲
+  const gridSpacing = getGridSpacing();             // グリッド間隔
+  const numLines = Math.ceil(50000 / gridSpacing);  // 最大グリッド配置範囲
 
-  // X方向グリッド線
+  // X方向グリッド線を描画
   for (let i = -numLines; i <= numLines; i++) {
     const worldX = i * gridSpacing;
     const canvasX = toCanvasX(worldX);
@@ -74,7 +74,7 @@ const gridSpacing = getGridSpacing();
     ctx.fillText(worldX.toString(), canvasX + 2, toCanvasZ(0) + 12);
   }
 
-  // Z方向グリッド線
+  // Z方向グリッド線を描画
   for (let i = -numLines; i <= numLines; i++) {
     const worldZ = i * gridSpacing;
     const canvasZ = toCanvasZ(worldZ);
@@ -87,7 +87,7 @@ const gridSpacing = getGridSpacing();
     ctx.fillText(worldZ.toString(), toCanvasX(0) + 4, canvasZ - 4);
   }
 
-  // 中心軸
+  // 中心軸(x=0, z=0)を強調表示
   const xAxisZ = toCanvasZ(0);
   const zAxisX = toCanvasX(0);
   ctx.strokeStyle = "#888";
@@ -100,49 +100,71 @@ const gridSpacing = getGridSpacing();
   ctx.lineTo(zAxisX, canvas.height);
   ctx.stroke();
 
-  // 軸ラベル(エスケープ済み)
-  ctx.fillStyle = "blue";
-  ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, toCanvasZ(0) - 10); // Xが増える（東） →
-  ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, toCanvasZ(0) - 10);                       // ← Xが減る（西）
-  ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", toCanvasX(0) + 10, canvas.height - 10); // ↓ Zが増える（南）
-  ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", toCanvasX(0) + 10, 20);                       // ↑ Zが減る（北）
+  // ===方角ラベルの表示設定(日本語はエスケープ)===
 
-  // --- 原点が見えてないときの軸ラベル補完(エスケープ済み) ---
+  // チェックボックスの状態を見て方角ラベルを中央に固定するかどうか判定
+  let fixedAxisLabel = false;
+  const axisToggle = document.getElementById("axisLabelToggle");
+  fixedAxisLabel = axisToggle ? axisToggle.checked : false;
+  
+  ctx.fillStyle = "blue"; // 方角ラベルの色
+  
+  if (fixedAxisLabel) {
+    // --- マップ四辺中央に方角ラベルを固定表示 ---
+    ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, canvas.height / 2 - 10);
+    ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, canvas.height / 2 - 10);
+    ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", canvas.width / 2 - 40, canvas.height - 10);
+    ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", canvas.width / 2 - 40, 20);
+  } else {
+    // --- 原点(0,0)に追従して方角ラベルを表示 ---
+    ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, toCanvasZ(0) - 10);
+    ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, toCanvasZ(0) - 10);
+    ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", toCanvasX(0) + 10, canvas.height - 10);
+    ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", toCanvasX(0) + 10, 20);
+  }
+
+  // 原点が画面外にある場合の方角ラベル補完表示(固定モードは非表示)
   const zeroX = toCanvasX(0);
   const zeroZ = toCanvasZ(0);
-  ctx.fillStyle = "blue";
+  
+  // fixedAxisLabel(固定ON)のときは非表示
+  if (!fixedAxisLabel) {
 
-  // X軸（Z=0）が見えない場合 → 上 or 下に表示
-  if (zeroZ < 0) {
-    ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, 20); // Xが増える（東） →
-    ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, 20);                       // ← Xが減る（西）
-  } else if (zeroZ > canvas.height) {
-    ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, canvas.height - 10);
-    ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, canvas.height - 10);
+    ctx.fillStyle = "blue"; // 方角ラベルの色
+  
+    // X軸(z=0)が画面外 → 上辺または下辺に方角ラベルを表示（←Xが減る / →Xが増える）
+    if (zeroZ < 0) {
+      ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, 20);
+      ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, 20);
+    } else if (zeroZ > canvas.height) {
+      ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, canvas.height - 10);
+      ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, canvas.height - 10);
+    }
+  
+    // Z軸(x=0)が画面外 → 左辺または右辺に方角ラベルを表示（↑Zが減る / ↓Zが増える）
+    if (zeroX < 0) {
+      ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", 10, 20);
+      ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", 10, canvas.height - 10);
+    } else if (zeroX > canvas.width) {
+      ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", canvas.width - 130, 20);
+      ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", canvas.width - 130, canvas.height - 10);
+    }
   }
-
-  // Z軸（X=0）が見えない場合 → 左 or 右に表示
-  if (zeroX < 0) {
-    ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", 10, 20);                       // ↑ Zが減る（北）
-    ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", 10, canvas.height - 10); // ↓ Zが増える（南）
-  } else if (zeroX > canvas.width) {
-    ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", canvas.width - 130, 20);
-    ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", canvas.width - 130, canvas.height - 10);
-  }
-
-  // --- 原点が見えてないときの補助線と数値表示（数字は端に寄せる） ---
+  // ===方角ラベルの表示設定ここまで===
+  
+  // ===補助線と軸ラベル(数値メモリ)の表示設定(常に表示)===
   ctx.strokeStyle = "#aaa";
   ctx.fillStyle = "#888";
   ctx.lineWidth = 1;
-
-  // 補助X軸（Z=0）線
+  
+  // 補助X軸（Z=0）が画面外 → 上端 or 下端に補助線とX座標の目盛りを表示
   if (zeroZ < 0 || zeroZ > canvas.height) {
-    const axisY = (zeroZ < 0) ? 0 : canvas.height - 0; // 上に消えたら上端、下に消えたら下端
+    const axisY = (zeroZ < 0) ? 0 : canvas.height - 0;
     ctx.beginPath();
     ctx.moveTo(0, axisY);
     ctx.lineTo(canvas.width, axisY);
     ctx.stroke();
-
+  
     for (let i = -numLines; i <= numLines; i++) {
       const worldX = i * gridSpacing;
       const canvasX = toCanvasX(worldX);
@@ -151,10 +173,10 @@ const gridSpacing = getGridSpacing();
       }
     }
   }
-
-  // 補助Z軸（X=0）線
+  
+  // 補助Z軸（X=0）が画面外 → 左端 or 右端に補助線とZ座標の目盛りを表示
   if (zeroX < 0 || zeroX > canvas.width) {
-    const axisX = (zeroX < 0) ? 0 : canvas.width - 1; // 左に消えたら左端、右に消えたら右端
+    const axisX = (zeroX < 0) ? 0 : canvas.width - 1;
     ctx.beginPath();
     ctx.moveTo(axisX, 0);
     ctx.lineTo(axisX, canvas.height);
@@ -167,28 +189,52 @@ const gridSpacing = getGridSpacing();
         const label = worldZ.toString();
         let textX;
         if (zeroX < 0) {
-          // 左端：右に少し余白とって表示
           textX = axisX + 4;
         } else {
-          // 右端：左にずらして表示（文字幅×文字数でざっくり補正）
           textX = axisX - ctx.measureText(label).width - 4;
         }
         ctx.fillText(label, textX, canvasZ - 4);
       }
     }
   }
+  // ===補助線と軸ラベル(数値メモリ)の表示設定ここまで===
 
-}
+} // function drawGrid() ここまで
 
-function drawPoint(x, z, name) {
+// テーブルの表示行をマップ上で強調
+function drawPoint(x, z, name, highlight = false) {
   const drawX = toCanvasX(x);
   const drawZ = toCanvasZ(z);
-  ctx.fillStyle = "red";
-  ctx.beginPath();
-  ctx.arc(drawX, drawZ, 3, 0, 2 * Math.PI);
-  ctx.fill();
-  ctx.fillStyle = "black";
-  ctx.fillText(`${name} (${x}, ${z})`, drawX + 4, drawZ - 4);
+
+  const label = `${name} (${x}, ${z})`;
+
+  if (highlight) {
+    // 点を赤＋少し大きめに
+    ctx.fillStyle = "red";
+    ctx.beginPath();
+    ctx.arc(drawX, drawZ, 6, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // 背景：四角で色を変える（文字の背後に表示）
+    ctx.font = "14px sans-serif";
+    const textWidth = ctx.measureText(label).width;
+    const padding = 2;
+    ctx.fillStyle = "#FFE36C"; // 背景色
+    ctx.fillRect(drawX + 4 - padding, drawZ - 18, textWidth + 2 * padding, 16);
+
+    // 文字（標準フォントでOK）
+    ctx.fillStyle = "black";
+    ctx.fillText(label, drawX + 4, drawZ - 6);
+  } else {
+    // 通常：赤い小さな点＋テキスト
+    ctx.fillStyle = "red";
+    ctx.beginPath();
+    ctx.arc(drawX, drawZ, 3, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.fillStyle = "black";
+    ctx.fillText(label, drawX + 4, drawZ - 4);
+  }
 }
 
 function drawCustomPoint(x, z) {
@@ -213,7 +259,7 @@ function render(data) {
     const z = parseInt(row[COL_Z]);
     const name = row[COL_LOC_NAME];
     if (!isNaN(x) && !isNaN(z)) {
-      drawPoint(x, z, name);
+      drawPoint(x, z, name, row.__highlight);
     }
   });
   if (customPoint) {
@@ -281,6 +327,20 @@ function displayTable(data) {
         const td = document.createElement("td");
         td.textContent = row[col] || "";
         tr.appendChild(td);
+        
+        // 表の行にマウスオーバーで対応するマップ上の地点をハイライト
+        tr.addEventListener("mouseover", () => {
+          globalData.forEach(r => r.__highlight = false);
+          row.__highlight = true;
+          render(globalData);
+        });
+        
+        // マウスを話したらハイライト解除
+        tr.addEventListener("mouseout", () => {
+          row.__highlight = false;
+          render(globalData);
+        });
+        
       });
       
       // URL列の処理
@@ -331,7 +391,7 @@ Papa.parse("location_data.csv", {
   download: true,
   header: true,
   complete: function(results) {
-    globalData = results.data;
+    globalData = results.data.map(row => ({ ...row, __highlight: false }));
     applySettings();         // ← ここで scale 設定と初回描画
     displayTable(globalData);
   }

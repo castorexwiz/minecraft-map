@@ -81,7 +81,7 @@ h1, h2 {
   background-color: #45a049;
 }
 
-/* 設定変更メニューのドロワー */
+/* ツールメニューのドロワー */
 
 .settings-toggle {
   position: fixed;
@@ -111,6 +111,7 @@ h1, h2 {
   transition: right 0.3s ease;
   z-index: 999;
   box-sizing: border-box;
+  overflow-y: auto;  /* ドロワーの表示が増えたときにスクロール */
 }
 
 .settings-panel.open {
@@ -124,6 +125,22 @@ h1, h2 {
 
 #settingsPanel input[type="number"] {
   width: 55px;
+}
+
+/* ドロワーの簡易座標リスト */
+#drawerTable table {
+  font-size: 12px;
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 10px;
+}
+#drawerTable th, #drawerTable td {
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+}
+#drawerTable tbody tr:hover {
+  background-color: #e0f7fa;
+  cursor: pointer;
 }
 
 /* キャンバスの中央表示＋スタイル */
@@ -196,13 +213,43 @@ tbody tr:hover {
   display: block;
 }
 
-
+// 気持ちばかりのレスポンシブ対応
 @media screen and (max-width: 820px) {
-  canvas {
-    font-size: 18px; /* キャンバス外の文字用 */
+  body {
+    font-size: 18px;
   }
 
-  body {
-    font-size: 18px; /* 一般的なテキストも大きく */
+  canvas {
+    font-size: 18px;
+  }
+
+  .jump-form {
+    font-size: 16px;
+  }
+
+  .jump-form input,
+  .jump-form button {
+    font-size: 16px;
+  }
+
+  .settings-panel {
+    font-size: 16px;
+  }
+
+  #drawerTable table {
+    font-size: 16px;
+  }
+
+  #drawerTable th,
+  #drawerTable td {
+    padding: 6px 8px;
+  }
+
+  table {
+    font-size: 16px;
+  }
+
+  th, td {
+    padding: 10px;
   }
 }

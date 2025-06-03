@@ -10,11 +10,13 @@
     <h1>しがりこソロ鯖マイクラ座標マップ（非公式）</h1>
       <p class="map-description">座標は（ X , Z ）でYは省略 / マウスドラッグとホイールで表示調整</p>
       <!-- 設定ボタン（右端固定） -->
-      <button id="settingsToggle" class="settings-toggle">設定</button>
+      <button id="settingsToggle" class="settings-toggle">ツール</button>
     </header>
     <main id="mainContent">
       <!-- 設定パネル（右からスライド） -->
       <aside id="settingsPanel" class="settings-panel">
+        <h2>座標リスト(簡易)</h2>
+        <div id="drawerTable"></div>
         <h2>表示設定</h2>
         <p>
           <label for="gridSpacingInput">グリッド間隔　</label>
@@ -27,10 +29,23 @@
         <p>
           <label for="axisLabelToggle">
             <input type="checkbox" id="axisLabelToggle" checked />
-            方角説明ラベル固定表示
+            方角ラベルを固定表示
           </label>
         </p>
         <button onclick="applySettings()">設定反映（表示リセット）</button>
+        <p>
+          <label for="langSelect">方角表記言語　</label>
+          <select id="langSelect" onchange="render(globalData)">
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+          </select>
+        </p>
+        <p>
+          <label>
+            <input type="checkbox" id="sunIconToggle" checked>
+            太陽アイコン ON/OFF
+          </label>
+        </p>
       </aside>
       <!-- タイトル下のパネル -->
       <section class="jump-form">
@@ -55,7 +70,7 @@
       const settingsPanel = document.getElementById("settingsPanel");
       settingsBtn.addEventListener("click", function() {
         const isOpen = settingsPanel.classList.toggle("open");
-        settingsBtn.textContent = isOpen ? "閉じる" : "設定";
+        settingsBtn.textContent = isOpen ? "閉じる" : "ツール";
       });
     </script>
   </body>

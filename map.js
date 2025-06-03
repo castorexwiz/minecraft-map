@@ -54,12 +54,21 @@ function getScale() {
     : canvas.width / totalRange;
 }
 
+// 画面サイズに応じたフォントサイズ設定(気持ちばかりのレスポンシブ対応)
+function getFontSize() {
+  return window.innerWidth < 820 ? 18 : 14;
+}
+
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height); // キャンバスクリア＆再描画準備
   let fontSize = window.innerWidth < 820 ? 22 : 14; // PCとスマホのフォント設定
-  ctx.font = `${fontSize}px sans-serif`;
+  ctx.font = `${getFontSize()}px sans-serif`;       // フォントサイズ取得
   const gridSpacing = getGridSpacing();             // グリッド間隔
   const numLines = Math.ceil(50000 / gridSpacing);  // 最大グリッド配置範囲
+  
+  // 追加：方角ラベルの固定チェック状態を取得
+  const axisToggle = document.getElementById("axisLabelToggle");
+  const fixedAxisLabel = axisToggle ? axisToggle.checked : false;
 
   // X方向グリッド線を描画
   for (let i = -numLines; i <= numLines; i++) {
@@ -70,7 +79,7 @@ function drawGrid() {
     ctx.moveTo(canvasX, 0);
     ctx.lineTo(canvasX, canvas.height);
     ctx.stroke();
-    ctx.fillStyle = "#888";
+    ctx.fillStyle = "#888";    // 座標数値ラベルの色
     ctx.fillText(worldX.toString(), canvasX + 2, toCanvasZ(0) + 12);
   }
 
@@ -83,7 +92,7 @@ function drawGrid() {
     ctx.moveTo(0, canvasZ);
     ctx.lineTo(canvas.width, canvasZ);
     ctx.stroke();
-    ctx.fillStyle = "#888";
+    ctx.fillStyle = "#888";    // 座標数値ラベルの色
     ctx.fillText(worldZ.toString(), toCanvasX(0) + 4, canvasZ - 4);
   }
 
@@ -100,54 +109,66 @@ function drawGrid() {
   ctx.lineTo(zAxisX, canvas.height);
   ctx.stroke();
 
-  // ===方角ラベルの表示設定(日本語はエスケープ)===
-
-  // チェックボックスの状態を見て方角ラベルを中央に固定するかどうか判定
-  let fixedAxisLabel = false;
-  const axisToggle = document.getElementById("axisLabelToggle");
-  fixedAxisLabel = axisToggle ? axisToggle.checked : false;
+  // ===方角ラベルの表示設定(多言語対応)===
+  const langSelect = document.getElementById("langSelect");
+  const lang = langSelect ? langSelect.value : "ja";
   
   ctx.fillStyle = "blue"; // 方角ラベルの色
-  
+
+  const labels = {
+    ja: {
+      posX: "X\u304C\u5897\u3048\u308B (\u6771) \u2192",  // Xが増える (東) →
+      negX: "\u2190 X\u304C\u6E1B\u308B (\u897F)",        // ← Xが減る (西)
+      posZ: "\u2193 Z\u304C\u5897\u3048\u308B (\u5357)",  // ↓ Zが増える (南)
+      negZ: "\u2191 Z\u304C\u6E1B\u308B (\u5317)"         // ↑ Zが減る (北)
+    },
+    en: {
+      posX: "positive X (east) \u2192",
+      negX: "\u2190 negative X (west)",
+      posZ: "\u2193 positive Z (south)",
+      negZ: "\u2191 negative Z (north)"
+    }
+  };
+  const label = labels[lang] || labels.ja;
+
   if (fixedAxisLabel) {
-    // --- マップ四辺中央に方角ラベルを固定表示 ---
-    ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, canvas.height / 2 - 10);
-    ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, canvas.height / 2 - 10);
-    ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", canvas.width / 2 - 40, canvas.height - 10);
-    ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", canvas.width / 2 - 40, 20);
+	// --- マップ四辺中央に方角ラベルを固定表示 ---
+    ctx.fillText(label.posX, canvas.width - 130, canvas.height / 2 - 10);
+    ctx.fillText(label.negX, 10, canvas.height / 2 - 10);
+    ctx.fillText(label.posZ, canvas.width / 2 - 40, canvas.height - 10);
+    ctx.fillText(label.negZ, canvas.width / 2 - 40, 20);
   } else {
-    // --- 原点(0,0)に追従して方角ラベルを表示 ---
-    ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, toCanvasZ(0) - 10);
-    ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, toCanvasZ(0) - 10);
-    ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", toCanvasX(0) + 10, canvas.height - 10);
-    ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", toCanvasX(0) + 10, 20);
+	// --- 原点(0,0)に追従して方角ラベルを表示 ---
+    ctx.fillText(label.posX, canvas.width - 130, toCanvasZ(0) - 10);
+    ctx.fillText(label.negX, 10, toCanvasZ(0) - 10);
+    ctx.fillText(label.posZ, toCanvasX(0) + 10, canvas.height - 10);
+    ctx.fillText(label.negZ, toCanvasX(0) + 10, 20);
   }
 
-  // 原点が画面外にある場合の方角ラベル補完表示(固定モードは非表示)
+  // 原点が画面外にある場合の補完（固定ONのときは非表示）
   const zeroX = toCanvasX(0);
   const zeroZ = toCanvasZ(0);
   
   // fixedAxisLabel(固定ON)のときは非表示
   if (!fixedAxisLabel) {
-
-    ctx.fillStyle = "blue"; // 方角ラベルの色
-  
-    // X軸(z=0)が画面外 → 上辺または下辺に方角ラベルを表示（←Xが減る / →Xが増える）
+    ctx.fillStyle = "blue";
+    
+    // X軸(z=0)が画面外 → 上辺または下辺に方角ラベルを残す（←Xが減る / →Xが増える）
     if (zeroZ < 0) {
-      ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, 20);
-      ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, 20);
+      ctx.fillText(label.posX, canvas.width - 130, 20);
+      ctx.fillText(label.negX, 10, 20);
     } else if (zeroZ > canvas.height) {
-      ctx.fillText("X\u304C\u5897\u3048\u308B (\u6771) \u2192", canvas.width - 130, canvas.height - 10);
-      ctx.fillText("\u2190 X\u304C\u6E1B\u308B (\u897F)", 10, canvas.height - 10);
+      ctx.fillText(label.posX, canvas.width - 130, canvas.height - 10);
+      ctx.fillText(label.negX, 10, canvas.height - 10);
     }
-  
-    // Z軸(x=0)が画面外 → 左辺または右辺に方角ラベルを表示（↑Zが減る / ↓Zが増える）
+
+    // Z軸(x=0)が画面外 → 左辺または右辺に方角ラベルを残す（↑Zが減る / ↓Zが増える）
     if (zeroX < 0) {
-      ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", 10, 20);
-      ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", 10, canvas.height - 10);
+      ctx.fillText(label.negZ, 10, 20);
+      ctx.fillText(label.posZ, 10, canvas.height - 10);
     } else if (zeroX > canvas.width) {
-      ctx.fillText("\u2191 Z\u304C\u6E1B\u308B (\u5317)", canvas.width - 130, 20);
-      ctx.fillText("\u2193 Z\u304C\u5897\u3048\u308B (\u5357)", canvas.width - 130, canvas.height - 10);
+      ctx.fillText(label.negZ, canvas.width - 130, 20);
+      ctx.fillText(label.posZ, canvas.width - 130, canvas.height - 10);
     }
   }
   // ===方角ラベルの表示設定ここまで===
@@ -198,6 +219,37 @@ function drawGrid() {
     }
   }
   // ===補助線と軸ラベル(数値メモリ)の表示設定ここまで===
+  
+  // 太陽アイコン表示
+  const sunToggle = document.getElementById("sunIconToggle");
+  const showSunIcon = sunToggle ? sunToggle.checked : false;
+  
+  if (showSunIcon) {
+    // ☀と↖↙ を描画
+    const originalFont = ctx.font;
+    ctx.font = `${getFontSize() + 6}px sans-serif`;
+    ctx.fillStyle = "red";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+  
+    const baseY = canvas.height / 2 - 80;
+    const baseXRight = canvas.width - 20;
+    const baseXLeft = 20;
+  
+    const offsetY = 20;
+    const offsetX = 8;
+    const arrowShift = 12;
+  
+    ctx.fillText("☀", baseXRight + offsetX, baseY + offsetY);
+    ctx.fillText("↖", baseXRight - arrowShift, baseY);
+  
+    ctx.fillText("☀", baseXLeft + 10, baseY);
+    ctx.fillText("↙", baseXLeft - offsetX - arrowShift + 10, baseY + offsetY);
+  
+    ctx.font = originalFont;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+  }
 
 } // function drawGrid() ここまで
 
@@ -216,7 +268,7 @@ function drawPoint(x, z, name, highlight = false) {
     ctx.fill();
 
     // 背景：四角で色を変える（文字の背後に表示）
-    ctx.font = "14px sans-serif";
+    ctx.font = `${getFontSize()}px sans-serif`;  // フォントサイズ取得
     const textWidth = ctx.measureText(label).width;
     const padding = 2;
     ctx.fillStyle = "#FFE36C"; // 背景色
@@ -249,6 +301,7 @@ function drawCustomPoint(x, z) {
   ctx.stroke();
   ctx.lineWidth = 1;
   ctx.fillStyle = "black";
+  ctx.font = `${getFontSize()}px sans-serif`;  // フォントサイズ取得
   ctx.fillText(`(${x}, ${z})`, drawX + 10, drawZ);
 }
 
@@ -289,19 +342,19 @@ function displayTable(data) {
 
   const toggleBtn = document.createElement("button");
   toggleBtn.id = "tableToggleBtn";
-  toggleBtn.textContent = "▼ 座標リストを表示";
+  toggleBtn.textContent = "▼ 座標リスト(詳細)を表示";
   toggleBtn.addEventListener("click", () => {
     tableWrapper.classList.toggle("open");
     toggleBtn.textContent = tableWrapper.classList.contains("open")
-      ? "▲ 座標リストを非表示"
-      : "▼ 座標リストを表示";
+      ? "▲ 座標リスト(詳細)を非表示"
+      : "▼ 座標リスト(詳細)を表示";
   });
 
   const tableWrapper = document.createElement("div");
   tableWrapper.id = "coordTableWrapper";
 
   const title = document.createElement("h2");
-  title.textContent = "座標リスト";
+  title.textContent = "座標リスト(詳細)";
   tableWrapper.appendChild(title);
 
   const table = document.createElement("table");
@@ -384,6 +437,57 @@ function displayTable(data) {
   tableArea.appendChild(wrapper);
 }
 
+// ドロワー内の座標リスト簡易表示
+function displayDrawerTable(data) {
+  const drawer = document.getElementById("drawerTable");
+  drawer.innerHTML = ""; // 初期化
+
+  const table = document.createElement("table");
+  table.style.width = "100%";
+  table.style.fontSize = "12px";
+
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  [COL_LOC_NAME, COL_X, COL_Z].forEach(col => {
+    const th = document.createElement("th");
+    th.textContent = HEADER_MAP[col];
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+
+  data.forEach(row => {
+    if (row[COL_LOC_NAME] && row[COL_X] && row[COL_Z]) {
+      const tr = document.createElement("tr");
+
+      [COL_LOC_NAME, COL_X, COL_Z].forEach(col => {
+        const td = document.createElement("td");
+        td.textContent = row[col] || "";
+        tr.appendChild(td);
+      });
+
+      tr.addEventListener("mouseover", () => {
+        globalData.forEach(r => r.__highlight = false);
+        row.__highlight = true;
+        render(globalData);
+      });
+
+      tr.addEventListener("mouseout", () => {
+        row.__highlight = false;
+        render(globalData);
+      });
+
+      tbody.appendChild(tr);
+    }
+  });
+
+  table.appendChild(tbody);
+  drawer.appendChild(table);
+}
+
+
 // データ読み込み -> マップ描画 -> 表の表示
 let globalData = [];
 
@@ -392,8 +496,15 @@ Papa.parse("location_data.csv", {
   header: true,
   complete: function(results) {
     globalData = results.data.map(row => ({ ...row, __highlight: false }));
-    applySettings();         // ← ここで scale 設定と初回描画
-    displayTable(globalData);
+    applySettings();                 // ここで scale 設定と初回描画
+    displayTable(globalData);        // メインの座標リスト詳細
+    displayDrawerTable(globalData);  // ドロワーの座標リスト簡易
+    
+    // ☀表示のトグル変更で再描画
+    document.getElementById("sunIconToggle").addEventListener("change", () => {
+      render(globalData);
+    });
+    
   }
 });
 

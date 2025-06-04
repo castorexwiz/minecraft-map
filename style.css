@@ -100,8 +100,8 @@ h1, h2 {
 .settings-panel {
   position: fixed;
   top: 0;
-  right: -260px; /* 完全に隠れるよう調整（-1 * width） */
-  width: 260px;
+  right: -280px; /* 完全に隠れるよう調整（-1 * width） */
+  width: 280px;
   height: 100%;
   text-align: center;
   background-color: #f9f9f9;

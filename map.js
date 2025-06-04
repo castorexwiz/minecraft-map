@@ -462,12 +462,41 @@ function displayDrawerTable(data) {
     if (row[COL_LOC_NAME] && row[COL_X] && row[COL_Z]) {
       const tr = document.createElement("tr");
 
+      // 関連URLを場所名にリンク（リンクタイトル付き）
       [COL_LOC_NAME, COL_X, COL_Z].forEach(col => {
         const td = document.createElement("td");
-        td.textContent = row[col] || "";
+        if (col === COL_LOC_NAME && row[COL_URL]) {
+          const urlValue = row[COL_URL].trim();
+          if (urlValue.includes("||")) {
+            const [label, link] = urlValue.split("||");
+            const a = document.createElement("a");
+            a.href = link.trim();
+            a.textContent = row[COL_LOC_NAME];
+            
+            // メモがあればリンクタイトルに含める
+            const comment = row[COL_COMMENT]?.trim();
+            a.title = label.trim() + (comment ? " / " + comment : "");
+            
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            td.appendChild(a);
+          } else if (urlValue.startsWith("http")) {
+            const a = document.createElement("a");
+            a.href = urlValue;
+            a.textContent = row[COL_LOC_NAME];
+            a.title = urlValue;
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            td.appendChild(a);
+          } else {
+            td.textContent = row[COL_LOC_NAME];
+          }
+        } else {
+          td.textContent = row[col] || "";
+        }
         tr.appendChild(td);
       });
-
+      
       tr.addEventListener("mouseover", () => {
         globalData.forEach(r => r.__highlight = false);
         row.__highlight = true;

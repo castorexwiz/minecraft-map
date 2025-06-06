@@ -8,7 +8,7 @@
   <body>
     <header>
     <h1>しがりこソロ鯖マイクラ座標マップ（非公式）</h1>
-      <p class="map-description">座標は（ X , Z ）でYは省略 / マウスドラッグとホイールで表示調整</p>
+      <p class="map-description">座標（ X , Z ）でY省略 / マウスドラッグとホイールで表示調整 / ダブルクリックでマーク</p>
       <!-- 設定ボタン（右端固定） -->
       <button id="settingsToggle" class="settings-toggle">ツール</button>
     </header>
@@ -46,6 +46,14 @@
             太陽アイコン ON/OFF
           </label>
         </p>
+
+<p>
+  <label>
+    <input type="checkbox" id="mouseCoordToggle" checked>
+    マウス位置を座標表示
+  </label>
+</p>
+
       </aside>
       <!-- タイトル下のパネル -->
       <section class="jump-form">
@@ -62,6 +70,22 @@
     <footer class="page-footer">
       Created by <a href="https://x.com/castor2141" target="_blank" rel="noopener noreferrer">@castor2141</a>
     </footer>
+
+
+<div id="coordTooltip" style="
+  position: absolute;
+  display: none;
+  padding: 4px 6px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: sans-serif;
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+"></div>
+
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script src="map.js"></script>
     <!-- ドロワーのスクリプトはHTML内に完結 -->

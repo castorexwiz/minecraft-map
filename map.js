@@ -508,6 +508,35 @@ function displayDrawerTable(data) {
         render(globalData);
       });
 
+const tooltip = document.getElementById("coordTooltip");
+
+canvas.addEventListener("mousemove", function(event) {
+  if (!isDragging) {
+    const toggle = document.getElementById("mouseCoordToggle");
+    if (!toggle || !toggle.checked) {
+      tooltip.style.display = "none";
+      return;
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const canvasX = event.clientX - rect.left;
+    const canvasZ = event.clientY - rect.top;
+    const worldX = Math.round((canvasX - canvas.width / 2) / scale - offsetX);
+    const worldZ = Math.round((canvasZ - canvas.height / 2) / scale - offsetZ);
+
+    tooltip.textContent = `(${worldX}, ${worldZ})`;
+    tooltip.style.left = `${event.pageX + 12}px`;
+    tooltip.style.top = `${event.pageY + 12}px`;
+    tooltip.style.display = "block";
+  }
+});
+
+canvas.addEventListener("mouseleave", function() {
+  tooltip.style.display = "none";
+});
+
+
+
       tbody.appendChild(tr);
     }
   });
@@ -538,6 +567,8 @@ Papa.parse("location_data.csv", {
 });
 
 // --- PC向けマウスイベント ---
+
+// ズーム（マウスホイール）
 canvas.addEventListener("wheel", function(event) {
   event.preventDefault();
   const zoomSpeed = 0.02; // マウスホイールのスピード調整
@@ -546,11 +577,14 @@ canvas.addEventListener("wheel", function(event) {
   render(globalData);
 }, { passive: false }); // ページ同時スクロール帽子
 
+// ドラッグ開始（マウス押下）
 canvas.addEventListener("mousedown", function(event) {
   isDragging = true;
   lastMouseX = event.clientX;
   lastMouseY = event.clientY;
 });
+
+// ドラッグ中（マウス移動）
 canvas.addEventListener("mousemove", function(event) {
   if (isDragging) {
     const dx = event.clientX - lastMouseX;
@@ -562,8 +596,29 @@ canvas.addEventListener("mousemove", function(event) {
     render(globalData);
   }
 });
+
+// ドラッグ終了 or マウス画面外に外れる
 canvas.addEventListener("mouseup", () => isDragging = false);
 canvas.addEventListener("mouseleave", () => isDragging = false);
+
+// ダブルクリックで座標入力＆マーク表示（常時有効）
+canvas.addEventListener("dblclick", function(event) {
+  const toggle = document.getElementById("mouseCoordToggle");
+
+  const rect = canvas.getBoundingClientRect();
+  const canvasX = event.clientX - rect.left;
+  const canvasZ = event.clientY - rect.top;
+  const worldX = Math.round((canvasX - canvas.width / 2) / scale - offsetX);
+  const worldZ = Math.round((canvasZ - canvas.height / 2) / scale - offsetZ);
+
+  // 入力欄に反映
+  document.getElementById("inputX").value = worldX;
+  document.getElementById("inputZ").value = worldZ;
+
+  // マーク表示（既存の markCustomPoint() 呼び出しでもOK）
+  customPoint = { x: worldX, z: worldZ };
+  render(globalData);
+});
 
 // --- モバイル向けタッチイベント ---
 canvas.addEventListener("touchstart", function(e) {

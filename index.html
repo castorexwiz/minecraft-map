@@ -46,13 +46,14 @@
             太陽アイコン ON/OFF
           </label>
         </p>
-
-<p>
-  <label>
-    <input type="checkbox" id="mouseCoordToggle" checked>
-    マウス位置を座標表示
-  </label>
-</p>
+        <p>
+          <label for="cursorDisplaySelect">カーソルに追従　</label>
+          <select id="cursorDisplaySelect">
+            <option value="none">なし</option>
+            <option value="coord" selected>座標</option>
+            <option value="compass">方角</option>
+          </select>
+        </p>
 
       </aside>
       <!-- タイトル下のパネル -->
@@ -71,20 +72,41 @@
       Created by <a href="https://x.com/castor2141" target="_blank" rel="noopener noreferrer">@castor2141</a>
     </footer>
 
-
-<div id="coordTooltip" style="
-  position: absolute;
-  display: none;
-  padding: 4px 6px;
-  background: rgba(255,255,255,0.9);
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 13px;
-  font-family: sans-serif;
-  pointer-events: none;
-  z-index: 9999;
-  box-shadow: 0 0 4px rgba(0,0,0,0.2);
-"></div>
+    <div id="coordTooltip" style="
+      position: absolute;
+      display: none;
+      padding: 4px 6px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: sans-serif;
+      pointer-events: none;
+      z-index: 9999;
+      box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    "></div>
+    
+    <div id="compassOverlay" style="
+      position: absolute;
+      display: none;
+      width: 180px;
+      height: 180px;
+      border: 2px solid #555;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      font-family: sans-serif;
+      font-size: 14px;
+      color: #333;
+      pointer-events: none;
+      z-index: 9999;
+    ">
+      <div style="position: relative; width: 100%; height: 100%;">
+        <span style="position: absolute; top: 4px; left: 50%; transform: translateX(-50%);">N(+-180)</span>
+        <span style="position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);">S(0)</span>
+        <span style="position: absolute; top: 50%; left: 4px; transform: translateY(-50%);">W(90)</span>
+        <span style="position: absolute; top: 50%; right: 4px; transform: translateY(-50%);">E(-90)</span>
+      </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script src="map.js"></script>

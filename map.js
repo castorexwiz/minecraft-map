@@ -5,6 +5,7 @@ canvas.height = 800; // マップ表示範囲(縦)
 const ctx = canvas.getContext("2d");
 let offsetX = 0;
 let offsetZ = 0;
+let scale = 1;
 let isDragging = false;
 let lastMouseX = 0;
 let lastMouseY = 0;
@@ -437,7 +438,7 @@ function displayTable(data) {
   tableArea.appendChild(wrapper);
 }
 
-// ドロワー内の座標リスト簡易表示
+// 簡易座標リスト（ドロワー側）の表示処理
 function displayDrawerTable(data) {
   const drawer = document.getElementById("drawerTable");
   drawer.innerHTML = ""; // 初期化
@@ -446,6 +447,7 @@ function displayDrawerTable(data) {
   table.style.width = "100%";
   table.style.fontSize = "12px";
 
+  // テーブルヘッダーの作成
   const thead = document.createElement("thead");
   const headerRow = document.createElement("tr");
   [COL_LOC_NAME, COL_X, COL_Z].forEach(col => {
@@ -462,25 +464,27 @@ function displayDrawerTable(data) {
     if (row[COL_LOC_NAME] && row[COL_X] && row[COL_Z]) {
       const tr = document.createElement("tr");
 
-      // 関連URLを場所名にリンク（リンクタイトル付き）
+      // 各セルを作成（場所名にはリンク処理を加える）
       [COL_LOC_NAME, COL_X, COL_Z].forEach(col => {
         const td = document.createElement("td");
+
         if (col === COL_LOC_NAME && row[COL_URL]) {
           const urlValue = row[COL_URL].trim();
+
           if (urlValue.includes("||")) {
+            // 「ラベル||URL」形式 → ラベルとリンクの両方表示
             const [label, link] = urlValue.split("||");
             const a = document.createElement("a");
             a.href = link.trim();
             a.textContent = row[COL_LOC_NAME];
-            
-            // メモがあればリンクタイトルに含める
             const comment = row[COL_COMMENT]?.trim();
             a.title = label.trim() + (comment ? " / " + comment : "");
-            
             a.target = "_blank";
             a.rel = "noopener noreferrer";
             td.appendChild(a);
+            
           } else if (urlValue.startsWith("http")) {
+            // URLのみ → 場所名にリンクを張る
             const a = document.createElement("a");
             a.href = urlValue;
             a.textContent = row[COL_LOC_NAME];
@@ -492,50 +496,24 @@ function displayDrawerTable(data) {
             td.textContent = row[COL_LOC_NAME];
           }
         } else {
+          // URLもラベルもない → プレーンテキスト表示
           td.textContent = row[col] || "";
         }
         tr.appendChild(td);
       });
       
+      // マウスオーバーでマップ上に強調表示（ハイライト）
       tr.addEventListener("mouseover", () => {
         globalData.forEach(r => r.__highlight = false);
         row.__highlight = true;
         render(globalData);
       });
 
+      // マウスアウトでハイライト解除
       tr.addEventListener("mouseout", () => {
         row.__highlight = false;
         render(globalData);
       });
-
-const tooltip = document.getElementById("coordTooltip");
-
-canvas.addEventListener("mousemove", function(event) {
-  if (!isDragging) {
-    const toggle = document.getElementById("mouseCoordToggle");
-    if (!toggle || !toggle.checked) {
-      tooltip.style.display = "none";
-      return;
-    }
-
-    const rect = canvas.getBoundingClientRect();
-    const canvasX = event.clientX - rect.left;
-    const canvasZ = event.clientY - rect.top;
-    const worldX = Math.round((canvasX - canvas.width / 2) / scale - offsetX);
-    const worldZ = Math.round((canvasZ - canvas.height / 2) / scale - offsetZ);
-
-    tooltip.textContent = `(${worldX}, ${worldZ})`;
-    tooltip.style.left = `${event.pageX + 12}px`;
-    tooltip.style.top = `${event.pageY + 12}px`;
-    tooltip.style.display = "block";
-  }
-});
-
-canvas.addEventListener("mouseleave", function() {
-  tooltip.style.display = "none";
-});
-
-
 
       tbody.appendChild(tr);
     }
@@ -545,6 +523,58 @@ canvas.addEventListener("mouseleave", function() {
   drawer.appendChild(table);
 }
 
+// マウスカーソルに追従表示（座標または方角円）
+const tooltip = document.getElementById("coordTooltip");
+const compass = document.getElementById("compassOverlay");
+
+// マウス移動時に表示更新
+canvas.addEventListener("mousemove", function(event) {
+  if (isDragging) return; // ドラッグ中は座標表示をしない
+
+  const modeSelect = document.getElementById("cursorDisplaySelect");
+  const mode = modeSelect?.value || "coord"; // select値（"none", "coord", "compass"）
+
+  // キャンバス内のマウス位置を取得（ページ→キャンバス座標系に変換）
+  const rect = canvas.getBoundingClientRect();
+  const canvasX = event.clientX - rect.left;
+  const canvasZ = event.clientY - rect.top;
+  
+  // 座標系の数値をワールド座標に変換（スケール＆オフセット補正）
+  const worldX = Math.round((canvasX - canvas.width / 2) / scale - offsetX);
+  const worldZ = Math.round((canvasZ - canvas.height / 2) / scale - offsetZ);
+
+  // いったん両方非表示に
+  tooltip.style.display = "none";
+  compass.style.display = "none";
+
+  // 選択モードに応じて表示切り替え
+  if (mode === "coord") {
+	// 座標のみ表示
+    tooltip.textContent = `(${worldX}, ${worldZ})`;
+    tooltip.style.left = `${event.pageX + 12}px`;
+    tooltip.style.top = `${event.pageY + 12}px`;
+    tooltip.style.display = "block";
+    
+    } else if (mode === "compass") {
+      // 描画された実サイズを取得
+      requestAnimationFrame(() => {
+        const compassWidth = compass.offsetWidth;
+        const compassHeight = compass.offsetHeight;
+        
+        // pageX/pageY でスクロールにも対応
+        compass.style.left = `${event.pageX - compassWidth / 2}px`;
+        compass.style.top = `${event.pageY - compassHeight / 2}px`;
+        compass.style.display = "block";
+      });
+    }
+
+});
+
+// マウスがキャンバスから離れたときに非表示にする
+canvas.addEventListener("mouseleave", function () {
+  tooltip.style.display = "none";
+  compass.style.display = "none";
+});
 
 // データ読み込み -> マップ描画 -> 表の表示
 let globalData = [];
@@ -594,6 +624,39 @@ canvas.addEventListener("mousemove", function(event) {
     lastMouseX = event.clientX;
     lastMouseY = event.clientY;
     render(globalData);
+  }
+});
+
+canvas.addEventListener("mousemove", function(event) {
+  if (isDragging) {
+    // 表示だけ非表示に（ドラッグ処理には影響しない）
+    tooltip.style.display = "none";
+    compass.style.display = "none";
+    return;
+  }
+
+  const modeSelect = document.getElementById("cursorDisplaySelect");
+  const mode = modeSelect?.value || "coord";
+
+  const rect = canvas.getBoundingClientRect();
+  const canvasX = event.clientX - rect.left;
+  const canvasZ = event.clientY - rect.top;
+  const worldX = Math.round((canvasX - canvas.width / 2) / scale - offsetX);
+  const worldZ = Math.round((canvasZ - canvas.height / 2) / scale - offsetZ);
+
+  tooltip.style.display = "none";
+  compass.style.display = "none";
+
+  if (mode === "coord") {
+    tooltip.textContent = `(${worldX}, ${worldZ})`;
+    tooltip.style.left = `${event.pageX + 12}px`;
+    tooltip.style.top = `${event.pageY + 12}px`;
+    tooltip.style.display = "block";
+  } else if (mode === "compass") {
+    const radius = 50;
+    compass.style.left = `${event.pageX - radius}px`;
+    compass.style.top = `${event.pageY - radius}px`;
+    compass.style.display = "block";
   }
 });
 

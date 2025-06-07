@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>NIJISANJI VTuber Shiga Riko Solo Server Minecraft Map (Unofficial)</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header>
+      <h1>Shigariko Solo Server Minecraft Map (Unofficial)</h1>
+      <p class="map-description">Coordinates (X, Z) / Drag and scroll to pan and zoom / Double-click to place a marker</p>
+      <button id="settingsToggle" class="settings-toggle">Tools</button>
+    </header>
+    <main id="mainContent">
+      <aside id="settingsPanel" class="settings-panel">
+        <h2>Simple Coordinate List</h2>
+        <div id="drawerTable"></div>
+        <h2>Display Settings</h2>
+        <p>
+          <label for="gridSpacingInput">Grid spacing </label>
+          <input type="number" id="gridSpacingInput" value="200" />
+        </p>
+        <p>
+          <label for="blockRangeInput">Display range</label>
+          ±<input type="number" id="blockRangeInput" value="1000" />
+        </p>
+        <p>
+          <label for="axisLabelToggle">
+            <input type="checkbox" id="axisLabelToggle" checked />
+            Fix direction labels on screen
+          </label>
+        </p>
+        <button onclick="applySettings()">Apply Settings (Reset View)</button>
+        <p>
+          <label for="langSelect">Direction label language </label>
+          <select id="langSelect" onchange="render(globalData)">
+            <option value="ja">Japanese</option>
+            <option value="en" selected>English</option>
+          </select>
+        </p>
+        <p>
+          <label>
+            <input type="checkbox" id="sunIconToggle" checked>
+            Show sun icon
+          </label>
+        </p>
+        <p>
+          <label for="cursorDisplaySelect">Mouse overlay display </label>
+          <select id="cursorDisplaySelect">
+            <option value="none">None</option>
+            <option value="coord">Coordinates</option>
+            <option value="compass" selected>Compass</option>
+          </select>
+        </p>
+      </aside>
+
+      <section class="jump-form">
+        Show current location  
+        <label>X : <input type="number" id="inputX" /></label>
+        <label>Z : <input type="number" id="inputZ" /></label>
+        →  
+        <button onclick="markCustomPoint()">Display on Map</button>
+      </section>
+
+      <canvas id="mapCanvas"></canvas>
+      <div id="tableArea"></div>
+    </main>
+
+    <footer class="page-footer">
+      Created by <a href="https://x.com/castor2141" target="_blank" rel="noopener noreferrer">@castor2141</a>
+    </footer>
+
+    <div id="coordTooltip" style="
+      position: absolute;
+      display: none;
+      padding: 4px 6px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: sans-serif;
+      pointer-events: none;
+      z-index: 9999;
+      box-shadow: 0 0 4px rgba(0,0,0,0.2);
+    "></div>
+
+    <div id="compassOverlay" style="
+      position: absolute;
+      display: none;
+      width: 200px;
+      height: 200px;
+      border: 2px solid #555;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      font-family: sans-serif;
+      font-size: 14px;
+      color: #333;
+      pointer-events: none;
+      z-index: 9999;
+    ">
+      <div style="position: relative; width: 100%; height: 100%;">
+        <span style="position: absolute; top: 4px; left: 50%; transform: translateX(-50%);">N(+-180)</span>
+        <span style="position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);">S(0)</span>
+        <span style="position: absolute; top: 50%; left: 4px; transform: translateY(-50%);">W(90)</span>
+        <span style="position: absolute; top: 50%; right: 4px; transform: translateY(-50%);">E(-90)</span>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="map.js"></script>
+    <script>
+      const settingsBtn = document.getElementById("settingsToggle");
+      const settingsPanel = document.getElementById("settingsPanel");
+      settingsBtn.addEventListener("click", function() {
+        const isOpen = settingsPanel.classList.toggle("open");
+        settingsBtn.textContent = isOpen ? "Close" : "Tools";
+      });
+    </script>
+  </body>
+</html>

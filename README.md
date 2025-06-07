@@ -8,17 +8,15 @@ It is an unofficial tool created by an individual developer (me!) to enhance the
 
 ## Features
 
-- Displays locations and coordinates defined in a CSV file on a grid-based map.
-- You can pan and zoom the map using your mouse (drag and scroll).
-- Enter X and Z coordinates into the input box to mark your current location with a yellow circle.
-- A table at the bottom of the page shows the contents of the CSV data.
-- Entering "text||URL" in the Related URL column displays a clickable text link
-- Optional compass overlay that follows the mouse cursor
-- Highlighting of map points when hovering over table rows
-- Simple coordinate list displayed in a drawer panel (click to jump)
-- Sun icon (↖/↙) can be toggled to indicate east/west direction
-- Axis direction labels can be either fixed on screen edges or follow the origin
-- Language support for direction labels (Japanese / English)
+- Displays locations and coordinates defined in a CSV file on the map
+- You can pan and zoom the map using your mouse (drag and scroll)
+- Enter X and Z coordinates into the input box to mark your current location with a yellow circle
+- A table at the bottom of the page lists the CSV data; hovering over a row highlights the corresponding point on the map
+- If you enter text||URL in the Related URL column, the text becomes a clickable hyperlink
+- A simplified coordinate list is shown in a drawer on the right (click to jump to a location)
+- Sun icons (↖ / ↙) are displayed on the sides of the map to indicate east and west (can be toggled ON/OFF)
+- Direction labels can be set to follow the origin or remain fixed on the screen edges; display language can be switched between Japanese and English
+- Optionally displays coordinates or a compass circle that follows the mouse cursor
 - A guide page explaining how to read coordinates and directions in Minecraft is also available (currently under adjustment and not yet linked from the top page).
 
 ## License

@@ -21,11 +21,11 @@ const COL_URL = "url";
 
 // HTMLに表示する一覧表の列名をここで設定
 const HEADER_MAP = {
-  [COL_LOC_NAME]: "場所",
-  [COL_X]: "X座標",
-  [COL_Z]: "Z座標",
-  [COL_COMMENT]: "メモ",
-  [COL_URL]: "関連URL"
+  [COL_LOC_NAME]: "Place/場所",
+  [COL_X]: "X",
+  [COL_Z]: "Z",
+  [COL_COMMENT]: "Memo",
+  [COL_URL]: "URL"
 };
 
 // タッチ操作用
@@ -343,19 +343,19 @@ function displayTable(data) {
 
   const toggleBtn = document.createElement("button");
   toggleBtn.id = "tableToggleBtn";
-  toggleBtn.textContent = "▼ 座標リスト(詳細)を表示";
+  toggleBtn.textContent = "▼ 座標リスト表示 / Show List";
   toggleBtn.addEventListener("click", () => {
     tableWrapper.classList.toggle("open");
     toggleBtn.textContent = tableWrapper.classList.contains("open")
-      ? "▲ 座標リスト(詳細)を非表示"
-      : "▼ 座標リスト(詳細)を表示";
+      ? "▲ 座標リスト(詳細)非表示 / Hide List"
+      : "▼ 座標リスト(詳細)表示 / Show List";
   });
 
   const tableWrapper = document.createElement("div");
   tableWrapper.id = "coordTableWrapper";
 
   const title = document.createElement("h2");
-  title.textContent = "座標リスト(詳細)";
+  title.textContent = "座標リスト(詳細) / Coordinate List";
   tableWrapper.appendChild(title);
 
   const table = document.createElement("table");

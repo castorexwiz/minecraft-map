@@ -27,7 +27,11 @@ It is an unofficial tool created by an individual developer (me!) to enhance the
   No specific license applies to the data, but it may be used only for viewing on the published page or for testing the code provided.
 
 ## GitHub Pages  
-https://castorexwiz.github.io/minecraft-map/
+- **English Version**:  
+  https://castorexwiz.github.io/minecraft-map/index.en.html
+- **Japanese Version (Original)**:  
+  https://castorexwiz.github.io/minecraft-map/
+
 
 ## Notes
 

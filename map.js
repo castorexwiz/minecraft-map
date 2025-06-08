@@ -700,8 +700,14 @@ canvas.addEventListener("touchstart", function(e) {
   }
 }, { passive: false });
 
+// タブレット・スマホ操作での地図移動と拡大縮小
 canvas.addEventListener("touchmove", function(e) {
   e.preventDefault();
+  
+  // タッチ中は座標・方角を非表示
+  tooltip.style.display = "none";
+  compass.style.display = "none";
+  
   if (e.touches.length === 1 && isTouchDragging) {
     const dx = e.touches[0].clientX - lastMouseX;
     const dy = e.touches[0].clientY - lastMouseY;

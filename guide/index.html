@@ -33,7 +33,7 @@
       font-family: monospace;
     }
     .sample-image {
-      margin: 24px 0 8px 0;
+      margin: 0;
       max-width: 100%;
       border: 1px solid #ccc;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -41,11 +41,20 @@
     .image-caption {
       font-size: 13px;
       color: #555;
-      margin-bottom: 24px;
+      margin-bottom: 0;
+    }
+    .sticky-image-wrapper {
+      position: sticky;
+      top: 0;
+      background-color: #fdfdfd;
+      z-index: 10;
+      padding-top: 12px;
+      padding-bottom: 12px;
     }
     .footer {
       font-size: 13px;
       color: #777;
+      text-align: right;
       margin-top: 60px;
     }
   </style>
@@ -54,49 +63,117 @@
 
   <h1>座標と方角の見方</h1>
 
-  <p><code>F3</code> を押して表示される情報のうち、<strong>座標</strong>と<strong>方角</strong>の2箇所が重要です。</p>
+  <p>→ <a href="../">しがりこソロ鯖マイクラ座標マップ（非公式）に戻る</a></p>
 
-  <img src="picture.png" alt="F3で表示される座標と方角の例" class="sample-image">
-  <div class="image-caption">▲ F3キーで表示された座標と方角の例（XYZとpositive X）</div>
+  <div class="sticky-image-wrapper">
+    <img src="picture.png" alt="F3で表示される座標と方角の例" class="sample-image">
+    <div class="image-caption">▲ F3キーで表示された座標と方角の例（XYZとpositive X）</div>
+  </div>
 
-  <h2>座標（XYZ: ● / ● / ●）</h2>
+  <h2>① 座標（X座標 / Y座標 / Z座標）【重要度：★★★★★】</h2>
   <ul>
     <li>現在位置の座標を表示します。</li>
-    <li>通常は <strong>X</strong>（横）と <strong>Z</strong>（縦）を見て移動します。</li>
-    <li><strong>Y</strong> は高さを示します。</li>
+    <li>1つめの数字は <strong>X座標</strong>（マップのヨコ軸）、3つめの数字は <strong>Z座標</strong>（マップのタテ軸）を見て移動します。</li>
+    <li>2つめの数字は <strong>Y座標</strong> で高さを示します。移動の時にはあまり使いません。</li>
   </ul>
 
-  <h2>方角（3行下の Toward ● ●）</h2>
+  <h2>② 方角【重要度：★】</h2>
   <ul>
-    <li>向いている方角を表示します。</li>
-    <li>例：
+    <li>向いている方角(東西南北)を表示します。</li>
       <ul>
-        <li><code>positive X</code>（ポジティブX） → Xが増える方向（東）</li>
-        <li><code>negative X</code>（ネガティブX） → Xが減る方向（西）</li>
-        <li><code>positive Z</code>（ポジティブZ） → Zが増える方向（南）</li>
-        <li><code>negative Z</code>（ネガティブZ） → Zが減る方向（北）</li>
-      </ul>
-    </li>
+      <li><code>east</code>（イースト） → 東（日が昇ってくる方角）</li>
+      <li><code>west</code>（ウェスト） → 西（日が沈んでいく方角）</li>
+      <li><code>south</code>（サウス） → 南</li>
+      <li><code>north</code>（ノース） → 北</li>
+    </ul>
+    <li>マイクラでは東西南北よりX/Z座標を見るほうがわかりやすいため、ここは見なくても大丈夫です。</li>
+  </ul>
+
+  <h2>③ X/Z座標の方角【重要度：★★★★】</h2>
+  <ul>
+    <li>X/Z座標で数字が増える/減る方角を表示します。移動すべき方向が一発でわかります。</li>
+    <ul>
+      <li><code>positive X</code>（ポジティブX） → Xが増える方向（東）</li>
+      <li><code>negative X</code>（ネガティブX） → Xが減る方向（西）</li>
+      <li><code>positive Z</code>（ポジティブZ） → Zが増える方向（南）</li>
+      <li><code>negative Z</code>（ネガティブZ） → Zが減る方向（北）</li>
+    </ul>
     <li>ただし、斜め方向（北東・南東など）もまとめて「ポジティブX（東）」などと表示されます。</li>
     <li>ブロックにまっすぐ向くと「真東（純粋なポジティブX）」のように正確な方向が分かります。</li>
   </ul>
 
+  <h2>④ 方角の数字表示【重要度：★★★】</h2>
+  <ul>
+    <li>東西南北の360度を－180から＋180までの数字で示しています。慣れるとこの数字と地図で方角調整できます。</li>
+    <li>マップページ「ツール」で「カーソルに追従：方角」を選択するとコンパスが出るので参考にしてください。</li>
+    <table border="1" cellspacing="0" cellpadding="6" style="text-align:center; border-collapse: collapse; margin: 12px 0; font-size: 14px; table-layout: fixed; width: 60%;">
+      <tr>
+        <th>北</th>
+        <th>北西</th>
+        <th>西</th>
+        <th>南西</th>
+        <th>南</th>
+        <th>南東</th>
+        <th>東</th>
+        <th>北東</th>
+        <th>北</th>
+      </tr>
+      <tr>
+        <td>+180</td>
+        <td>+135</td>
+        <td>+90</td>
+        <td>+45</td>
+        <td>0</td>
+        <td>-45</td>
+        <td>-90</td>
+        <td>-135</td>
+        <td>-180</td>
+      </tr>
+    </table>
+  </ul>
+
+  <h2>まとめ</h2>
+  <ul>
+    <li>ここまでの情報を一覧表にまとめると以下のようになります。</li>
+    <table border="1" cellspacing="0" cellpadding="6" style="text-align:center; border-collapse: collapse; margin-top: 12px; font-size: 14px; table-layout: fixed; width: 60%;">
+      <tr>
+        <td>北西<br><code>+135</code></td>
+        <td><strong style="color:red">negative Z</strong><br>北(north)<br><code>±180</code></td>
+        <td>北東<br><code>-135</code></td>
+      </tr>
+      <tr>
+        <td><strong style="color:red">negative Z</strong><br>西(west)日没<br><code>+90</code></td>
+        <td><strong>あなた</strong></td>
+        <td><strong style="color:blue">positive X</strong><br>東(east)日の出<br><code>-90</code></td>
+      </tr>
+      <tr>
+        <td>南西<br><code>+45</code></td>
+        <td><strong style="color:blue">positive Z</strong><br>南(south)<br><code>0</code></td>
+        <td>南東<br><code>-45</code></td>
+      </tr>
+    </table>
+    <li>使い方の例：(-206, -744)から(625, -1780)に移動したい</li>
+    <ul>
+      <li>X座標は増える方向、Z座標は減る方向に移動するとよい。</li>
+      <li>positive X とnegative Z の中間方面（つまり北東の-135くらい）に進む。</li>
+      <li>朝イチ移動なら日の出を右斜め前に見る方角。</li>
+      <li>XかZのどちらかが先に揃うので、次にもう一方を揃える方向を探す。</li>
+    </ul>
+  </ul>
+
   <h2>その他の情報</h2>
   <ul>
-    <li>pisitive X などの後にあるカッコ内の数字、1つめは方角を－180から＋180の数字で示しています。
-    <ul>
-      <li>北(-180)、東(-90)、南(0)、西(90)。</li>
-      <li>0/90/180を目安にすれば各方角の正面を向きますが、ブロックの向きを見て合わせるほうが早いです。</li>
-    </ul>
     <li>pisitive X などの次の行（Client Light）は明るさを0～15で示しています。7以下は敵が湧きます。</li>
     <ul>
       <li>カッコ内は内訳で、空からの明るさと光源ブロックからの明るさです。</li>
     </ul>
-    <li>上記画像の一番下の文字はバイオームを示しています。</li>
+    <li>上記画像の一番下はバイオーム（森林、ジャングル、ディープダークなど）です。詳細は「マイクラ　バイオーム名」で検索。</li>
   </ul>
 
+  <p><a href="index.en.html">English Version</a></p>
+
   <div class="footer">
-    作成者: <a href="https://x.com/castor2141" target="_blank" rel="noopener noreferrer">@castor2141</a>
+    Created by <a href="https://x.com/castor2141" target="_blank" rel="noopener noreferrer">@castor2141</a>
   </div>
 
 </body>

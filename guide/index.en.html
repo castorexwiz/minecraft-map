@@ -1,47 +1,174 @@
-<h1>Understanding Coordinates and Direction</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Understanding Coordinates and Directions</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      line-height: 1.6;
+      margin: 40px 24px;
+      color: #333;
+      background-color: #fdfdfd;
+      max-width: 780px;
+    }
+    h1 {
+      font-size: 26px;
+      margin-bottom: 24px;
+    }
+    h2 {
+      font-size: 20px;
+      margin-top: 32px;
+    }
+    p, li {
+      font-size: 15px;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    code {
+      background-color: #eee;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    .sample-image {
+      margin: 0;
+      max-width: 100%;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .image-caption {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 0;
+    }
+    .sticky-image-wrapper {
+      position: sticky;
+      top: 0;
+      background-color: #fdfdfd;
+      z-index: 10;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+    .footer {
+      font-size: 13px;
+      color: #777;
+      text-align: right;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
 
-<p>When you press <code>F3</code> in Minecraft, two key pieces of information are the <strong>coordinates</strong> and <strong>facing direction</strong>.</p>
+  <h1>Understanding Coordinates and Directions</h1>
 
-<img src="picture.png" alt="Example of coordinates and direction displayed by pressing F3" class="sample-image">
-<div class="image-caption">Example of coordinate and direction display (XYZ and positive X) shown using the F3 key</div>
+  <p>-> <a href="../index.en.html">Back to Shiga Riko(NIJISANJI VTuber) Solo Server Minecraft Map (Unofficial)</a></p>
 
-<h2>Coordinates (XYZ: ? / ? / ?)</h2>
-<ul>
-  <li>Shows your current location in the world.</li>
-  <li>You’ll usually move based on <strong>X</strong> (horizontal) and <strong>Z</strong> (depth) values.</li>
-  <li><strong>Y</strong> indicates your vertical height.</li>
-</ul>
+  <div class="sticky-image-wrapper">
+    <img src="picture.png" alt="Example of coordinates and direction using F3" class="sample-image">
+    <div class="image-caption">▲ Coordinates and direction as shown using the F3 key (XYZ and positive X)</div>
+  </div>
 
-<h2>Direction (third line below: Toward ? ?)</h2>
-<ul>
-  <li>Shows the direction your character is facing.</li>
-  <li>Examples:
-    <ul>
-      <li><code>positive X</code> → Facing in the increasing X direction (East)</li>
-      <li><code>negative X</code> → Decreasing X direction (West)</li>
-      <li><code>positive Z</code> → Increasing Z direction (South)</li>
-      <li><code>negative Z</code> → Decreasing Z direction (North)</li>
-    </ul>
-  </li>
-  <li>Diagonal directions (e.g., Northeast, Southeast) are also labeled using the closest axis direction (e.g., "positive X" for East).</li>
-  <li>If you face a block head-on, you’ll see the exact direction like "pure East (positive X)".</li>
-</ul>
-
-<h2>Other Information</h2>
-<ul>
-  <li>The numbers in parentheses after "positive X", etc., indicate the facing angle in degrees from -180 to +180:
-    <ul>
-      <li>North (-180), East (-90), South (0), West (90)</li>
-      <li>Facing exactly 0/90/180 helps you align precisely, but it’s often quicker to use block orientation.</li>
-    </ul>
-  </li>
-  <li>The next line (Client Light) shows brightness levels from 0 to 15. Mobs spawn at level 7 or below.</li>
+  <h2>① Coordinates (X / Y / Z) 【Importance: ★★★★★】</h2>
   <ul>
-    <li>The values in parentheses show light from the sky and from blocks, respectively.</li>
+    <li>Shows your current location in the world.</li>
+    <li>The first number is the <strong>X-coordinate</strong> (horizontal), and the third is the <strong>Z-coordinate</strong> (vertical).</li>
+    <li>The second number is the <strong>Y-coordinate</strong>, which represents height. It’s less important for navigating horizontally.</li>
   </ul>
-  <li>The text at the very bottom of the screen indicates the current biome.</li>
-</ul>
 
-<div class="footer">
-  Created by <a href="https://x.com/castor2141" target="_blank" rel="noopener noreferrer">@castor2141</a>
-</div>
+  <h2>② Cardinal Direction 【Importance: ★】</h2>
+  <ul>
+    <li>This shows which cardinal direction you're facing.</li>
+    <ul>
+      <li><code>east</code> → Direction of sunrise</li>
+      <li><code>west</code> → Direction of sunset</li>
+      <li><code>south</code></li>
+      <li><code>north</code></li>
+    </ul>
+    <li>In Minecraft, it’s often easier to navigate using X and Z coordinates than compass directions.</li>
+  </ul>
+
+  <h2>③ Direction Based on X/Z Coordinates 【Importance: ★★★★】</h2>
+  <ul>
+    <li>Shows which direction increases or decreases the X/Z values. It's a quick way to figure out which way you need to go.</li>
+    <ul>
+      <li><code>positive X</code> → X increases (East)</li>
+      <li><code>negative X</code> → X decreases (West)</li>
+      <li><code>positive Z</code> → Z increases (South)</li>
+      <li><code>negative Z</code> → Z decreases (North)</li>
+    </ul>
+    <li>Diagonal directions (e.g. northeast or southwest) may still appear as "positive X", etc.</li>
+    <li>If you're facing directly at a block, you’ll see an exact label like “pure positive X”.</li>
+  </ul>
+
+  <h2>④ Direction in Degrees 【Importance: ★★★】</h2>
+  <ul>
+    <li>Directions are also shown as angles between -180° and +180°.</li>
+    <li>Once you're used to it, you can adjust your facing direction by looking at the number.</li>
+    <li>On the map page, click the "Tools" button and enable "Mouse overlay display: Compass" to show a compass.</li>
+    <table border="1" cellspacing="0" cellpadding="6" style="text-align:center; border-collapse: collapse; margin: 12px 0; font-size: 14px; table-layout: fixed; width: 60%;">
+      <tr>
+        <th>North</th>
+        <th>North<br>west</th>
+        <th>West</th>
+        <th>South<br>west</th>
+        <th>South</th>
+        <th>South<br>east</th>
+        <th>East</th>
+        <th>North<br>east</th>
+        <th>North</th>
+      </tr>
+      <tr>
+        <td>+180</td>
+        <td>+135</td>
+        <td>+90</td>
+        <td>+45</td>
+        <td>0</td>
+        <td>-45</td>
+        <td>-90</td>
+        <td>-135</td>
+        <td>-180</td>
+      </tr>
+    </table>
+  </ul>
+
+  <h2>Summary</h2>
+  <ul>
+    <li>This table brings together everything you’ve learned so far:</li>
+    <table border="1" cellspacing="0" cellpadding="6" style="text-align:center; border-collapse: collapse; margin-top: 12px; font-size: 14px; table-layout: fixed; width: 60%;">
+      <tr>
+        <td>Northwest<br><code>+135</code></td>
+        <td><strong style="color:red">negative Z</strong><br>North<br><code>±180</code></td>
+        <td>Northeast<br><code>-135</code></td>
+      </tr>
+      <tr>
+        <td><strong style="color:red">negative X</strong><br>West (sunset)<br><code>+90</code></td>
+        <td><strong>You</strong></td>
+        <td><strong style="color:blue">positive X</strong><br>East (sunrise)<br><code>-90</code></td>
+      </tr>
+      <tr>
+        <td>Southwest<br><code>+45</code></td>
+        <td><strong style="color:blue">positive Z</strong><br>South<br><code>0</code></td>
+        <td>Southeast<br><code>-45</code></td>
+      </tr>
+    </table>
+  </ul>
+
+  <h2>Other Information</h2>
+  <ul>
+    <li>The line after <code>positive X</code> (Client Light) shows the light level from 0 to 15. Enemies can spawn at level 7 or lower.</li>
+    <ul>
+      <li>Values in parentheses show light from the sky and light-emitting blocks.</li>
+    </ul>
+    <li>The very bottom of the image shows the biome you’re currently in.</li>
+  </ul>
+
+  <p><a href="index.html">Japanese Version / 日本語版</a></p>
+
+  <div class="footer">
+    Created by <a href="https://x.com/castor2141" target="_blank" rel="noopener noreferrer">@castor2141</a>
+  </div>
+
+</body>
+</html>

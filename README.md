@@ -17,7 +17,9 @@ It is an unofficial tool created by an individual developer (me!) to enhance the
 - Sun icons (↖ / ↙) are displayed on the sides of the map to indicate east and west (can be toggled ON/OFF)
 - Direction labels can be set to follow the origin or remain fixed on the screen edges; display language can be switched between Japanese and English
 - Optionally displays coordinates or a compass circle that follows the mouse cursor
-- A guide page explaining how to read coordinates and directions in Minecraft is also available (currently under adjustment and not yet linked from the top page).
+- A guide page explaining how to read coordinates and directions in Minecraft is also available
+- Direction mode to calculate angle from point A to point B
+- Partial auto-switching of labels based on selected language
 
 ## License
 

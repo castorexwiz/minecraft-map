@@ -54,16 +54,35 @@
             <option value="compass">方角</option>
           </select>
         </p>
+        <p>
+          <label>
+            <input type="checkbox" id="directionModeToggle">
+            方角計算モード（2点指定）
+          </label>
+        </p>
         <p><a href="index.en.html">English Version</a></p>
-
       </aside>
       <!-- タイトル下のパネル -->
-      <section class="jump-form">
-        現在地の確認　
-        <label>X : <input type="number" id="inputX" /></label>
-        <label>Z : <input type="number" id="inputZ" /></label>
-        →　
-        <button onclick="markCustomPoint()">マップ上に表示</button>
+      <section class="jump-form" id="modeSwitcherArea">
+        <!-- 通常モード：現在地表示 -->
+        <div id="locationModeUI">
+          現在地の確認　
+          <label>X : <input type="number" id="inputX" /></label>
+          <label>Z : <input type="number" id="inputZ" /></label>
+          →　
+          <button onclick="markCustomPoint()">マップ上に表示</button>
+        </div>
+        <!-- 方角モード：A/B点と結果表示 -->
+        <div id="directionModeUI" style="display: none;">
+          <div id="directionPanel" style="padding: 10px; background: #eee; font-family: sans-serif; max-width: 900px;">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; column-gap: 1em; row-gap: 4px; justify-content: center; white-space: nowrap;">
+              <div>点A: <span id="pointAInfo">未指定</span></div>
+              <div>点B: <span id="pointBInfo">未指定</span></div>
+              <button onclick="calculateDirection()" style="white-space: nowrap;">方角計算</button>
+              <div id="directionResult" style="white-space: nowrap; padding-left: 0.5em;"></div>
+            </div>
+          </div>
+        </div>
       </section>
       <!-- JavaScriptからのデータ挿入エリア -->
       <canvas id="mapCanvas"></canvas>

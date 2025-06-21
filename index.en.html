@@ -52,17 +52,37 @@
             <option value="compass">Compass</option>
           </select>
         </p>
+        <p>
+          <label>
+            <input type="checkbox" id="directionModeToggle">
+            Direction calculation mode (specify 2 points)
+          </label>
+        </p>
         <p><a href="index.html">Japanese Version / 日本語版</a></p>
 
       </aside>
 
-      <section class="jump-form">
-        Go to 
-        <label>X : <input type="number" id="inputX" /></label>
-        <label>Z : <input type="number" id="inputZ" /></label>
-         → 
-        <button onclick="markCustomPoint()">Show</button>
-      </section>
+<section class="jump-form" id="modeSwitcherArea">
+  <!-- Default Mode: Show current location -->
+  <div id="locationModeUI">
+    Go to 
+    <label>X : <input type="number" id="inputX" /></label>
+    <label>Z : <input type="number" id="inputZ" /></label>
+     → 
+    <button onclick="markCustomPoint()">Show</button>
+  </div>
+  <!-- Direction Mode: Show A/B and result -->
+  <div id="directionModeUI" style="display: none;">
+    <div id="directionPanel" style="padding: 10px; background: #eee; font-family: sans-serif; max-width: 900px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; column-gap: 1em; row-gap: 4px; justify-content: center; white-space: nowrap;">
+        <div>Point A: <span id="pointAInfo">Unset</span></div>
+        <div>Point B: <span id="pointBInfo">Unset</span></div>
+        <button onclick="calculateDirection()" style="white-space: nowrap;">Calculate Direction</button>
+        <div id="directionResult" style="white-space: nowrap; padding-left: 0.5em;"></div>
+      </div>
+    </div>
+  </div>
+</section>
 
       <canvas id="mapCanvas"></canvas>
       <div id="tableArea"></div>

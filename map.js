@@ -1,3 +1,28 @@
+// === 多言語対応ラベル定義と取得関数 ===
+const i18n = {
+  unsetLabel: {
+    ja: "未指定",
+    en: "no data"
+  },
+  directionLabel: {
+    ja: "A → B の方角値: ",
+    en: "Direction from A to B: "
+  },
+  directionUnsetAlert: {
+    ja: "2点をダブルクリックで指定してください",
+    en: "Please specify two points by double-clicking"
+  }
+};
+
+function getLang() {
+  return document.getElementById("langSelect")?.value || "ja";
+}
+
+function t(key) {
+  const lang = getLang();
+  return i18n[key]?.[lang] || i18n[key]?.ja || "";
+}
+
 const canvas = document.getElementById("mapCanvas");
 canvas.width = 800;  // マップ表示範囲(横)
 canvas.height = 800; // マップ表示範囲(縦)
@@ -10,7 +35,8 @@ let isDragging = false;
 let lastMouseX = 0;
 let lastMouseY = 0;
 let customPoint = null;
-
+let directionPoints = []; // 方角モード用の2点
+let directionArrow = null; // A→B の矢印情報（描画用）
 
 // 列名の定数マッピング(CSVの列名を変更した時はここを修正)
 const COL_LOC_NAME = "location_name";
@@ -38,7 +64,7 @@ function toCanvasX(worldX) {
 }
 function toCanvasZ(worldZ) {
   return canvas.height / 2 + (worldZ + offsetZ) * scale; // Zが増えると下(南)
-}
+	}
 
 function getGridSpacing() {
   const input = document.getElementById("gridSpacingInput");
@@ -306,6 +332,66 @@ function drawCustomPoint(x, z) {
   ctx.fillText(`(${x}, ${z})`, drawX + 10, drawZ);
 }
 
+// === 方角モード：指定した点A/Bを描画
+function drawDirectionPoints() {
+  directionPoints.forEach((p, i) => {
+    const drawX = toCanvasX(p.x);
+    const drawZ = toCanvasZ(p.z);
+    ctx.fillStyle = i === 0 ? "blue" : "green"; // A:青 / B:緑
+    ctx.beginPath();
+    ctx.arc(drawX, drawZ, 8, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.fillStyle = "black";
+    ctx.font = `${getFontSize()}px sans-serif`;
+    ctx.fillText(`${i === 0 ? "A" : "B"} (${p.x}, ${p.z})`, drawX + 10, drawZ);
+  });
+}
+
+// === 方角モード：点A→点Bの矢印とテキストを表示
+function drawDirectionArrow() {
+  if (!directionArrow) return;
+
+  const ax = toCanvasX(directionArrow.ax);
+  const az = toCanvasZ(directionArrow.az);
+  const bx = toCanvasX(directionArrow.bx);
+  const bz = toCanvasZ(directionArrow.bz);
+
+  // 線（矢印本体）
+  ctx.strokeStyle = "orange";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(ax, az);
+  ctx.lineTo(bx, bz);
+  ctx.stroke();
+
+  // 矢印の頭（簡易的に三角形で）
+  const angleRad = Math.atan2(bz - az, bx - ax);
+  const headLength = 12;
+  const arrowX = bx;
+  const arrowZ = bz;
+  const leftX = arrowX - headLength * Math.cos(angleRad - Math.PI / 6);
+  const leftZ = arrowZ - headLength * Math.sin(angleRad - Math.PI / 6);
+  const rightX = arrowX - headLength * Math.cos(angleRad + Math.PI / 6);
+  const rightZ = arrowZ - headLength * Math.sin(angleRad + Math.PI / 6);
+
+  ctx.fillStyle = "orange";
+  ctx.beginPath();
+  ctx.moveTo(arrowX, arrowZ);
+  ctx.lineTo(leftX, leftZ);
+  ctx.lineTo(rightX, rightZ);
+  ctx.closePath();
+  ctx.fill();
+
+  // テキスト（角度）
+  ctx.fillStyle = "black";
+  ctx.font = `${getFontSize() + 2}px sans-serif`;
+  const midX = (ax + bx) / 2;
+  const midZ = (az + bz) / 2;
+  ctx.fillText(`${directionArrow.angle}`, midX + 10, midZ - 10);
+}
+
+
 function render(data) {
   drawGrid();
   data.forEach(row => {
@@ -319,6 +405,16 @@ function render(data) {
   if (customPoint) {
     drawCustomPoint(customPoint.x, customPoint.z);
   }
+  
+  // 方角モードで点A指定あればマップに描画
+  if (directionPoints.length > 0) {
+    drawDirectionPoints();
+  }
+
+  if (directionArrow) {
+    drawDirectionArrow();
+  }
+
 }
 
 function applySettings() {
@@ -336,6 +432,41 @@ function markCustomPoint() {
     render(globalData);
   }
 }
+
+
+// === 方角モード：点A→点Bの方角値を計算して矢印描画用データ保持
+function calculateDirection() {
+  if (directionPoints.length !== 2) {
+    alert(t("directionUnsetAlert"));
+    return;
+  }
+  const [A, B] = directionPoints;
+  const dx = B.x - A.x;
+  const dz = B.z - A.z;
+
+  let angle = Math.atan2(-dx, dz) * (180 / Math.PI);
+
+
+  if (angle > 180) angle -= 360;
+  if (angle <= -180) angle += 360;
+
+  const resultText = `${t("directionLabel")}${angle.toFixed(1)}`;
+  document.getElementById("directionResult").textContent = resultText;
+  
+  // 矢印表示
+  directionArrow = {
+    ax: A.x,
+    az: A.z,
+    bx: B.x,
+    bz: B.z,
+    angle: angle.toFixed(1)
+  };
+  
+  render(globalData);
+}
+
+
+
 
 function displayTable(data) {
   const wrapper = document.createElement("div");
@@ -593,6 +724,24 @@ Papa.parse("location_data.csv", {
       render(globalData);
     });
     
+    // 方角モードのON/OFF切り替え：UI表示を変更して状態を初期化
+    const dirToggle = document.getElementById("directionModeToggle");
+    dirToggle?.addEventListener("change", () => {
+      const isDirectionMode = dirToggle.checked;
+      document.getElementById("locationModeUI").style.display = isDirectionMode ? "none" : "block";
+      document.getElementById("directionModeUI").style.display = isDirectionMode ? "block" : "none";
+    
+      if (!isDirectionMode) {
+        directionPoints = [];
+        directionArrow = null; // 矢印を消す
+        document.getElementById("directionResult").textContent = "";
+        document.getElementById("pointAInfo").textContent = t("unsetLabel");
+        document.getElementById("pointBInfo").textContent = t("unsetLabel");
+      } else {
+        customPoint = null; // 現在地モード解除
+      }
+        render(globalData);
+    });
   }
 });
 
@@ -664,24 +813,39 @@ canvas.addEventListener("mousemove", function(event) {
 canvas.addEventListener("mouseup", () => isDragging = false);
 canvas.addEventListener("mouseleave", () => isDragging = false);
 
-// ダブルクリックで座標入力＆マーク表示（常時有効）
+// ダブルクリックで：現在地モードは座標入力＆マーク表示、方角モードは点A/B追加
 canvas.addEventListener("dblclick", function(event) {
-  const toggle = document.getElementById("mouseCoordToggle");
-
   const rect = canvas.getBoundingClientRect();
   const canvasX = event.clientX - rect.left;
   const canvasZ = event.clientY - rect.top;
   const worldX = Math.round((canvasX - canvas.width / 2) / scale - offsetX);
   const worldZ = Math.round((canvasZ - canvas.height / 2) / scale - offsetZ);
 
-  // 入力欄に反映
-  document.getElementById("inputX").value = worldX;
-  document.getElementById("inputZ").value = worldZ;
+  const dirMode = document.getElementById("directionModeToggle")?.checked;
 
-  // マーク表示（既存の markCustomPoint() 呼び出しでもOK）
-  customPoint = { x: worldX, z: worldZ };
-  render(globalData);
+  if (dirMode) {
+	directionArrow = null; // モード切り替え時に矢印を消す
+    directionPoints.push({ x: worldX, z: worldZ });
+    if (directionPoints.length > 2) directionPoints.shift();
+    render(globalData);
+    
+    // UI更新
+    document.getElementById("pointAInfo").textContent = directionPoints[0]
+      ? `(${directionPoints[0].x}, ${directionPoints[0].z})`
+      : t("unsetLabel");
+    document.getElementById("pointBInfo").textContent = directionPoints[1]
+      ? `(${directionPoints[1].x}, ${directionPoints[1].z})`
+      : t("unsetLabel");
+  } else { // 現在地モード：座標をマーク＋入力欄反映
+    customPoint = { x: worldX, z: worldZ };
+    
+    document.getElementById("inputX").value = worldX;
+    document.getElementById("inputZ").value = worldZ;
+    
+    render(globalData);
+  }
 });
+
 
 // --- モバイル向けタッチイベント ---
 canvas.addEventListener("touchstart", function(e) {

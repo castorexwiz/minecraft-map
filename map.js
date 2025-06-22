@@ -89,6 +89,7 @@ function getFontSize() {
 
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height); // キャンバスクリア＆再描画準備
+  ctx.lineWidth = 1;                                // 方角の矢印描画後にGridが太くなるため初期化
   let fontSize = window.innerWidth < 820 ? 22 : 14; // PCとスマホのフォント設定
   ctx.font = `${getFontSize()}px sans-serif`;       // フォントサイズ取得
   const gridSpacing = getGridSpacing();             // グリッド間隔

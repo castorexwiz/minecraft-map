@@ -14,8 +14,9 @@ const i18n = {
   }
 };
 
+// 表示言語（HTMLのlang属性から取得：メッセージや文言に使用）
 function getLang() {
-  return document.getElementById("langSelect")?.value || "ja";
+  return document.documentElement.lang || "ja";
 }
 
 function t(key) {
@@ -465,28 +466,32 @@ function calculateDirection() {
   render(globalData);
 }
 
-
-
-
 function displayTable(data) {
+  const lang = getLang();  // HTMLの言語を取得（ja or en）
+
   const wrapper = document.createElement("div");
   wrapper.id = "tableContainer";
 
   const toggleBtn = document.createElement("button");
   toggleBtn.id = "tableToggleBtn";
-  toggleBtn.textContent = "▼ 座標リスト表示 / Show List";
+  toggleBtn.textContent = lang === "en"
+    ? "▼ Show Coordinate List"
+    : "▼ 座標リスト 表示";
+
   toggleBtn.addEventListener("click", () => {
     tableWrapper.classList.toggle("open");
     toggleBtn.textContent = tableWrapper.classList.contains("open")
-      ? "▲ 座標リスト(詳細)非表示 / Hide List"
-      : "▼ 座標リスト(詳細)表示 / Show List";
+      ? (lang === "en" ? "▲ Hide Coordinate List" : "▲ 座標リスト 非表示")
+      : (lang === "en" ? "▼ Show Coordinate List" : "▼ 座標リスト 表示");
   });
 
   const tableWrapper = document.createElement("div");
   tableWrapper.id = "coordTableWrapper";
 
   const title = document.createElement("h2");
-  title.textContent = "座標リスト(詳細) / Coordinate List";
+  title.textContent = lang === "en"
+    ? "Coordinate List"
+    : "座標リスト(詳細)";
   tableWrapper.appendChild(title);
 
   const table = document.createElement("table");
